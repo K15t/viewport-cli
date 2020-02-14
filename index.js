@@ -16,7 +16,8 @@ const { showWelcome, showFinishedCreate, showFinishedConfig, showConfigFirst, sh
 // ----------------- Configuration ----------------- //
 
 const templateDirName = "templates";
-const vpconfigPath = path.join(process.cwd(), './vpconfig.json'); // absolute path
+const templateDirPath = path.join(__dirname, templateDirName); // absolute path
+const vpconfigPath = path.join(__dirname, './vpconfig.json'); // absolute path
 
 // ----------------- Commands ----------------- //
 
@@ -54,13 +55,13 @@ function config() {
 async function buildTheme() {
 
     // get list of available templates
-    const templateList = directoryList(templateDirName); // uses path relative to this file
+    const templateList = directoryList(templateDirPath); // uses path relative to this file
 
     // get properties of theme from user
     const theme = await askProperties({'templateList': templateList});
 
     // compute paths for theme
-    theme.srcPath = path.join(process.cwd(), templateDirName, theme.template); // absolute path of theme template
+    theme.srcPath = path.join(templateDirPath, theme.template); // absolute path of theme template
     theme.destPath = path.join(process.cwd(), theme.name); // absolute path where theme should be created
     theme.packageJsonPath = path.join(theme.destPath, 'package.json');
     theme.gulpfilePath = path.join(theme.destPath, 'gulpfile.js');

@@ -21,10 +21,11 @@
 
 ## Build process in `gulpfile.js`
 
+- ? include `includePaths` in sass pipe options
+- ? Pipe .css before SASS compiler or after ?
 - Add CSS minification pipeline, see [CSS Minification Benchmark](http://goalsmashers.github.io/css-minification-benchmark/)
 - ? Integrate sourcemaps ?
 - Integrate JS transpiler like Babel
 - Integrate TypeScript
 - ? Integrate image compression
 - Add more error handling and console output
-- ? Pipe .css before SASS compiler or after ?
