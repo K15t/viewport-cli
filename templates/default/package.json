@@ -1,0 +1,16 @@
+{
+  "name": "",
+  "version": "",
+  "description": "",
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-viewport": "^2.3.0",
+    "del": "^5.1.0",
+    "gulp-dart-sass": "^0.9.1",
+    "gulp-autoprefixer": "^7.0.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-uglify": "^3.0.2",
+    "browser-sync": "^2.26.7"
+  },
+  "private": true
+}
