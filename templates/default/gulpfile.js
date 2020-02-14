@@ -38,8 +38,13 @@ function buildDirOf(type) {
 
 // --------------- Tasks --------------- //
 
-// Globs of file types, can restrict file types by modifying globs in array, e.g. **/*.jpg for images to restrict to .jpg files
+exports.clean = clean;
+exports.build = series(create, clean, parallel(fonts, images, scripts, styles, markups), upload);
+exports.watch = series(exports.build, startWatch);
+
+// Globs of file types
 // e.g. sassGlob currently results in ['src/styles/**/*.scss', 'src/styles/**/*.sass']
+// can restrict file types by modifying globs in array, e.g. **/*.jpg for images to restrict to .jpg files
 // ToDo: restrict to font data types e.g. fonts/**/*.woff, valid image data types e.g. fonts/**/*.jpg
 const fontsGlob = ['**'].map(item => srcDirOf('fonts') + item);
 const imagesGlob = ['**'].map(item => srcDirOf('images') + item);
@@ -64,13 +69,11 @@ function clean() {
 
 function fonts() {
     return src(fontsGlob)
-        //.pipe(viewportTheme.upload())
         .pipe(dest(buildDirOf('fonts')));
 }
 
 function images() {
     return src(imagesGlob)
-        //.pipe(viewportTheme.upload())
         .pipe(dest(buildDirOf('images')));
 }
 
@@ -79,13 +82,8 @@ function scripts() {
         .pipe(concat('main.js'))
         .pipe(uglify())
         .pipe(dest(buildDir));
-        /*.pipe(viewportTheme.upload({
-            sourceBase: 'build/js/main.js',
-            targetPath: 'js/main.js'
-        }))*/
 }
 
-// Note: autoprefixer defaults are browserlist defaults, i.e. > 0.5%, last 2 versions, Firefox ESR, not dead
 function styles() {
     return src(sassGlob)
         .pipe(sass({
@@ -96,15 +94,10 @@ function styles() {
         .pipe(concat('main.css'))
         .pipe(autoprefixer())
         .pipe(dest(buildDir));
-        /*.pipe(viewportTheme.upload({
-            sourceBase: 'build/css/main.css',
-            targetPath: 'css/main.css'
-        }))*/
 }
 
 function markups() {
     return src(markupGlob)
-        //.pipe(viewportTheme.upload())
         .pipe(dest(buildDirOf('markups')));
 }
 
@@ -137,19 +130,3 @@ function startWatch(done) {
 
     done();
 }
-
-// ToDo: Make help nicer, not just duplicate lines from above, e.g. gulp --tasks-simple
-function showHelp(done) {
-    console.log("Please run gulp with one of the available tasks:");
-    console.log("clean - resets theme by deleting build folder locally and in VPRT");
-    console.log("build - builds theme and uploads it to VPRT");
-    console.log("watch - builds theme and uploads it to VPRT on every change");
-    done();
-}
-
-// Specify public tasks //
-
-exports.default = showHelp;
-exports.clean = clean;
-exports.build = series(create, clean, parallel(fonts, images, scripts, styles, markups), upload);
-exports.watch = series(exports.build, startWatch);

@@ -1,5 +1,5 @@
 {
-  "name": "vprt-tools",
+  "name": "viewport-tools",
   "version": "1.0.0",
   "description": "Create themes locally for Scroll Viewport",
   "dependencies": {
@@ -14,7 +14,7 @@
     "replace-in-file": "^5.0.2"
   },
   "bin": {
-    "vprt": "./index.js"
+    "viewport": "./index.js"
   },
   "repository": {
     "type": "git",

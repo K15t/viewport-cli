@@ -1,39 +1,82 @@
 # README
 
+(Note: The commands and file paths below are written for UNIX but the packages themselves should run on Windows as well.)
+
 ## Introduction
 
-The `viewport-tools` package is a simple command line tool that enables you to develop themes for VPRT locally instead of in the built-in Theme Editor in the browser. It creates a theme directory and sets up the task manager `gulp` along with a predefined build process such that files can easily be uploaded to VPRT.
+The `viewport-tools` package is a simple command line tool to set up local theme development for Scroll Viewport. Creating themes locally enables you to work in your favorite IDE instead of the built-in Theme Editor of Scroll Viewport in the browser. `viewport-tools` sets up the powerful task manager `gulp` to take care of building and uploading your theme to Scroll Viewport. It also comes with customizable theme templates that you can choose from to get you started quickly.
+
 
 ## Getting started
 
 ### Installation
 
-0. Have Confluence Server up and running with the Scroll Viewport add-on (see ?).
-1. Install Node.js, npm, npx ?
-2. Install viewport-tools globally
+0. Have Confluence Server up and running with the Scroll Viewport add-on (see [insert URL](#)).
+1. Install Node.js, `npm` and `npx`. We recommend using `nvm` to install Node.
+2. Install `viewport-tools` globally
 ```bash
 npm install -g viewport-tools
 ```
 
 ### Usage
 
-1. Create a theme using `viewport create` in your desired working directory. Provide information and make sure the Confluence Server URL matches your installation
-2. Write some code 👩‍💻 Make sure to put the files in their proper directories (see documentation below).
-2. Run `npx gulp build` from within your theme directory to build the project. If you at some point want to reset your VPRT theme run `npx gulp clean`. This normally shouldn't be needed as it is part of the build workflow already.
-- use `watch` to automatically upload changes, stop using <kbd>CTRL</kbd> + <kbd>C</kbd>, browser opens if BROWSERSYNC_URL is configured
+1\. Configure `viewport-tools` to match your configuration of Scroll Viewport like the URL of your Confluence Server instance. The tool will guide you through it.
+```javascript
+viewport config
+```
+2\. In your desired working directory create a new theme. You need to provide basic information and can choose from installed theme templates. The tool will guide you through it.
+```javascript
+cd <your-working-directory>
+viewport create
+```
+
+3\. From within your theme folder install the dependencies like `gulp`.
+```javascript
+cd <your-theme-name>
+npm install
+```
+
+4\. Write some source code. (Make sure to put the files in their proper directories for the build workflow to work properly).
+
+5\. From within your theme folder build the project and upload it to Scroll Viewport using `gulp` and the tasks defined by your theme template. The "default" theme template provides already the following tasks:
+- Builds and uploads the theme to Scroll Viewport.
+ ```javascript
+ npx gulp build
+ ```
+- Continuously builds and uploads the theme to Scroll Viewport as soon as you make changes. If `viewport-tools` was properly configured, it opens the browser and automatically refreshes. Stop it using <kbd>CTRL</kbd> + <kbd>C</kbd>.
+ ```javascript
+ npx gulp watch
+ ```
+- Resets the theme. This normally shouldn't be needed as it is part of the build workflow already.
+```javascript
+npx gulp clean
+```
 
 
 ## Documentation
 
-### `.viewportrc`
+<!-- ToDo: finish -->
 
-- `.viewportrc` contains URL of your Confluence Server instance
-- can contain different "target environments" that you can switch between using ?
-- needed for upload of files, browser sync, ?
+### Theme templates
 
-### Folder structure
+When creating a new theme `viewport-tools` offers to select from the available theme templates. By default the "default" theme template is selected which comes with a predefined folder structure and build workflow. It should fit most basic needs and is intended to get your started quickly.
 
-The `viewport-tools` script sets up the following folder structure for a new theme. It creates a `src` folder for all files with subfolders for specific file types:
+Theme templates are simply folders within in the `templates` folder in `viewport-tools`. Therefore you can even create your own theme templates and modify existing ones. A theme template must contain a `package.json` and a `gulpfile.js` which are used when creating a new theme from that template. The `package.json` is filled with the theme data you provide on theme creation like name, version and description. The `gulpfile.js` is filled with the configuration of your Scroll Viewport instance that you provided when configuring `viewport-tools`.
+
+### Target environments
+
+A target environment is a configuration of your Scroll Viewport instance and contains data like the URL of your Confluence Server, username and password. Target environments are saved in the `vpconfig.json` in the directory of `viewport-tools`. You can find out the directory using `where viewport`. When you create a new target environment it is added to the existing one, if you add an already existing one it is overwritten. The active target environment is always the latest one you added.
+
+When creating a new theme, `viewport-tools` takes the active target environment from the `vpconfig.json` and fills it into the `gulpfile.js` of the new theme. This allows the build workflow to upload your theme to Scroll Viewport (using `gulp-viewport`).
+
+**Beware:** The `vpconfig.json` is saved unencrypted and includes the username and password of your Confluence Server instance. Therefore you should use these tools only for development.
+
+### "Default" theme template
+
+#### Folder structure
+
+The default theme comes with the following folder structure. A `src` folder is used for all source code. Each file type should go in its corresponding subdirectory.
+
 - `fonts` for font files
 - `images` for image files
 - `markups` for markup files, e.g. `.html`, `.vm`
@@ -42,48 +85,56 @@ The `viewport-tools` script sets up the following folder structure for a new the
 
 The build workflow then creates a `build` folder with same subfolders.
 
-### Build workflow
+Note: Changing the folder structure means the build workflow in the `gulpfile.js` needs to be adapted as well.
 
-The task manager `gulp` is used to automate the build workflow of a theme. The predefined build workflow should work for most people but can always be customised, more on that later. By default, style and script files are compiled (SASS, TypeScript [ToDo]) and merged to one file and made backwards compatible for older browsers. Images are compressed as well [ToDo]. See the following tables for detailed descriptions.
+#### Build workflow
 
-Note: Files need to be placed in their proper directories to be handled by the build workflow, e.g. any `.js` files must go inside `src/scripts/`. Any subdirectories are allowed. To change the folder structure needs to modify `.gulpfile.js` and `index.js` of `viewport-tools`.
+The task manager `gulp` is used to automate the build workflow of a theme. The workflow is defined in the `gulpfile.js`. The predefined build workflow should work for most people, but you can customise it if you want. By default, style and script files are compiled and each merged into one file and styles are made backwards compatible for older browsers (more details see below).
 
-#### Tasks
+Note: Files need to be placed in their proper directories to be handled by the build workflow, e.g. any `.js` files must go inside `src/scripts/`. Subdirectories are allowed.
+
+##### Tasks
 
 Public tasks can be run from anywhere within the theme folder using `npx gulp <task-name>`.
 
 | Task name | Subtasks                                                       | Description                                                                 |
 | --------- | -------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| clean     | -                                                              | deletes build directory locally and in VPRT                                 |
-| build     | create, clean, fonts, images, scripts, styles, markups, upload | builds theme and uploads it to VPRT                                         |
-| watch     | build, [respective task for changed file, upload]              | builds theme and uploads it to VPRT on every file change, refreshes browser |
+| clean     | -                                                              | deletes build directory locally and in Scroll Viewport                                 |
+| build     | create, clean, fonts, images, scripts, styles, markups, upload | builds theme and uploads it to Scroll Viewport                                         |
+| watch     | build, [respective task for changed file, upload]              | builds theme and uploads it to Scroll Viewport on every file change, refreshes browser |
 
 
-#### Subtasks
+##### Subtasks
 
-Private tasks are used internally by the public tasks and can not be run from command line. Most of the subtasks process a single file type from the source directory and output it to the build directory. The following table shows the subtasks along with the default source directories, build directories and file types. You could improve it by restricting images only to .jpeg file types, adding compression to markup files etc.
+Private tasks are used internally by the public tasks and can not be run from command line. Most of the subtasks process a single file type from the source directory and output it to the build directory. The following table shows the subtasks along with the default source directories, build directories and file types handled.
 
 | Task name | Description                                                                           | File types         | Source directory            | Build directory |
 | --------- | ------------------------------------------------------------------------------------- | ------------------ | --------------------------- | --------------- |
-| create    | creates theme in VPRT                                                                 | -                  | -                           | -               |
+| create    | creates theme in Scroll Viewport                                                                 | -                  | -                           | -               |
 | fonts     | -                                                                                     | any                | src/fonts/                  | build/fonts/    |
 | images    | -                                                                                     | any                | src/images/                 | build/images/   |
 | scripts   | concats to single main.js, uglifies                                                   | .js                | src/scripts/                | build/          |
 | styles    | compiles .scss and .sass, concats with .css to single main.css, adds browser prefixes | .css, .sass, .scss | src/styles/                 | build/          |
 | markups   | -                                                                                     | .html, .vm         | src/markups/                | build/markups/  |
-| upload    | uploads file type or entire build dir to VPRT                                         | any                | build/ or build/[file type] | -               |
+| upload    | uploads file type or entire build dir to Scroll Viewport                                         | any                | build/ or build/[file type] | -               |
 
 #### Custom build workflow
 
-To customise the build workflow for all new themes, modify the `gulpfile.js` in the `viewport-tools` directory. For already existing themes you need to modify the `gulpfile.js` in the respective theme directory. If you make changes regarding the folder structure, make sure to also change it in the `viewport-tools` script which creates those folders for new themes as well as the `.gitignore` file incase you use git (which you should).
+The build above build workflow should work for most people. But nothing stops you from adapting it to your needs. For example, you could restricting images to only handle .jpeg and other image file types instead of all file types, or add a compression pipe to the markup files pipeline.
 
-## Notes
+To customise the build workflow for *all* new themes, modify the `gulpfile.js` in the template. Don't change the declaration of the `activeEnv` variable, because this is used by the `viewport-tools` to replace the content programmatically when creating a new theme. ⚠️
 
-- The workflow dependencies like gulp, gulp-viewport, etc. are installed as devDependencies in theme package. They won't be installed if Node environment is set to production. This is most of the time the right choice. Don't worry about it if it doesn't tell you anything.
+#### Misc
+
+- A `.gitignore` file is included to ignore any OS files as well as Node related files like the `node_modules` folder in case you use git to version control your theme (which you should!). This also means if clone a theme you need to run `npm install` again to install all dependencies.
 
 - Beware of using strict mode in script files. Since they are merged to one file, the script might behave differently than expected. If the top file has a strict mode directive, the whole file is executed in strict mode, if not then the whole file is executed in sloppy mode. If any part of your code relies on strict mode (or sloppy mode), e.g. `this` being undefined in a function, it will break. ⚠️
 
-- The browsers handled by autoprefixer can be modified by adding a browserlist to `package.json`, not by supplying arguments to autoprefixer in the pipe in `gulpfile.js`.
+## Notes
+
+- A theme is actually a NPM package. Though it is not designed to be published. The `package.json` is only intended to load the dependencies for `gulp`. Having a separate `node_modules` subdirectory with the same dependencies for every theme created is certainly not the most space efficient way, but `gulp` is not designed to work globally and will only work if contained in the theme directory. If you want to exchange themes between different machines, it might even benefit you that each theme contains all of its dependencies and can run on the other machine without needing to set up anything, except having Node.js installed. Also the `.gitignore` file already takes care of not backing up the dependencies to your Git repository.
+
+- The dependencies like `gulp`, `gulp-viewport`, etc. of the theme package are installed as `devDependencies` which means they won't be installed if the Node environment is set to `production`. (Also they wouldn't be included if the theme package were to be published, which doesn't matter, since it isn't intended to anyways.). If you don't know what it means then this is not a problem, since Node is by default in `development` mode.
 
 ## Roadmap
 
