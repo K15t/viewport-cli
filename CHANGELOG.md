@@ -48,8 +48,7 @@ K15t is proud to announce `viewport-tools` version 1.0.0 with long awaited impro
     - uses native exports object to register tasks instead of `task()` method
 - remove / replace old dependencies, update existing ones
     - use del instead of gulp-clean
-    - use gulp-uglify instead of gulp-clean
-    - use gulp-dart-sass instead of gulp-sass which depends on C compiler
+    - use gulp-terser instead of gulp-clean
     - remove bower
     - remove LESS in favour of SASS
 - improved tasks
@@ -59,6 +58,8 @@ K15t is proud to announce `viewport-tools` version 1.0.0 with long awaited impro
 - improved build pipelines
     - independent of any choice of frameworks, not hardcoded anymore, are sourced like any other file in source directory
     - handles .css files too instead of only .sass files
-    - concats style files to main.css, before did not
+    - script files are transpiled using `gulp-babel`, concated, minified using `gulp-terser` (before did not concat script files)
+    - style files are compiled using `gulp-sass`, concated, minified using `gulp-clean-css`, and get autoprefixed
+    - sourcemaps are added to both script and style files
 - autoprefixer default browserlist is used instead of hardcoded `browser` array (`ie >= 9`), i.e. "> 0.5%, last 2 versions, Firefox ESR, not dead"
 - environment config is not hardcoded anymore (see `vpconfig.json` above)

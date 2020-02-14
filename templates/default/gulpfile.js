@@ -3,14 +3,24 @@
 "use strict";
 
 // --------------- Modules --------------- //
+
 const { src, dest, series, parallel, watch } = require('gulp');
 const del           = require('del');
+
 const ViewportTheme = require('gulp-viewport');
-const concat        = require('gulp-concat');
-const terser        = require('gulp-terser');
-const sass          = require('gulp-dart-sass');
-const autoprefixer  = require('gulp-autoprefixer');
 const browserSync   = require('browser-sync').create();
+
+const concat        = require('gulp-concat');
+const sourcemaps    = require('gulp-sourcemaps');
+
+const babel         = require('gulp-babel');
+const terser        = require('gulp-terser');
+
+const sass          = require('gulp-sass');
+const cleancss      = require('gulp-clean-css');
+// const autoprefixer  = require('gulp-autoprefixer'); // currently broken with gulp-sourcemaps
+const postcss       = require('gulp-postcss'); // replace gulp-autoprefixer
+const autoprefixer  = require('autoprefixer'); // replace gulp-autoprefixer
 
 // --------------- Theme --------------- //
 
@@ -47,15 +57,14 @@ exports.build = series(create, clean, parallel(fonts, images, scripts, styles, m
 exports.watch = series(exports.build, startWatch);
 
 // Globs of file types, relative to this script file
-// e.g. sassGlob currently results in ['src/styles/**/*.scss', 'src/styles/**/*.sass']
+// e.g. stylesGlob currently results in ['src/styles/**/*.scss', 'src/styles/**/*.sass']
 // can restrict file types by modifying globs in array, e.g. **/*.jpg for images to restrict to .jpg files
 // ToDo: restrict to font data types e.g. fonts/**/*.woff, valid image data types e.g. fonts/**/*.jpg
 const fontsGlob = ['**'].map(item => buildPath(srcDirOf('fonts'), item));
 const imagesGlob = ['**'].map(item => buildPath(srcDirOf('images'), item));
-const jsGlob = ['**/*.js'].map(item => buildPath(srcDirOf('scripts'), item));
-const sassGlob = ['**/*.scss', '**/*.sass'].map(item => buildPath(srcDirOf('styles'), item));
-const cssGlob = ['**/*.css'].map(item => buildPath(srcDirOf('styles'), item));
-const markupGlob = ['**/*.html', '**/*.vm'].map(item => buildPath(srcDirOf('markups'), item));
+const scriptsGlob = ['**/*.js'].map(item => buildPath(srcDirOf('scripts'), item));
+const stylesGlob = ['**/*.scss', '**/*.sass', '**/*.css'].map(item => buildPath(srcDirOf('styles'), item));
+const markupsGlob = ['**/*.html', '**/*.vm'].map(item => buildPath(srcDirOf('markups'), item));
 
 function create(done) {
     if (viewportTheme.exists()) {
@@ -82,25 +91,29 @@ function images() {
 }
 
 function scripts() {
-    return src(jsGlob)
+    return src(scriptsGlob)
+        .pipe(sourcemaps.init())
+        .pipe(babel({presets: ['@babel/env']}))
         .pipe(concat('main.js'))
         .pipe(terser())
+        .pipe(sourcemaps.write())
         .pipe(dest(buildDir));
 }
 
 function styles() {
-    return src(sassGlob)
-        .pipe(sass({
-            outputStyle: 'compressed'
-        }).on('error', sass.logError))
-        .pipe(src(cssGlob))
+    return src(stylesGlob)
+        .pipe(sourcemaps.init())
+        .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
         .pipe(concat('main.css'))
-        .pipe(autoprefixer())
+        .pipe(cleancss())
+        //.pipe(autoprefixer()) // currently broken with gulp-sourcemaps
+        .pipe(postcss([autoprefixer()])) // replace gulp-autoprefixer
+        .pipe(sourcemaps.write())
         .pipe(dest(buildDir));
 }
 
 function markups() {
-    return src(markupGlob)
+    return src(markupsGlob)
         .pipe(dest(buildDirOf('markups')));
 }
 
@@ -125,11 +138,12 @@ function startWatch(done) {
     }
     viewportTheme.on('uploaded', browserSync.reload);
 
-    watch(fontsGlob, series(fonts, () => upload('fonts'))); // arguments of series must be functions
-    watch(imagesGlob, series(images, () => upload('images'))); // arguments of series must be functions
-    watch(jsGlob, series(scripts, upload));
-    watch([...cssGlob, ...sassGlob], series(styles, upload));
-    watch(markupGlob, series(markups, () => upload('markups'))); // arguments of series must be functions
+    // use anonymous functions since series() expects functions
+    watch(fontsGlob, series(fonts, () => upload('fonts')));
+    watch(imagesGlob, series(images, () => upload('images')));
+    watch(scriptsGlob, series(scripts, () => upload('scripts')));
+    watch(stylesGlob, series(styles, () => upload('styles')));
+    watch(markupsGlob, series(markups, () => upload('markups')));
 
     done();
 }

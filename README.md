@@ -89,7 +89,7 @@ Note: Changing the folder structure means the build workflow in the `gulpfile.js
 
 #### Build workflow
 
-The task manager `gulp` is used to automate the build workflow of a theme. The workflow is defined in the `gulpfile.js`. The predefined build workflow should work for most people, but you can customise it if you want. By default, style and script files are compiled and each merged into one file and styles are made backwards compatible for older browsers (more details see below).
+The task manager `gulp` is used to automate the build workflow of a theme. The workflow is defined in the `gulpfile.js`. The predefined build workflow should work for most people, but you can customise it if you want. By default, script files are transpiled and made backwards compatible for older browsers (Babel), merged into one file, minified, and style files are compiled (Sass), merged into one file, minified, and made backwards compatible for older browsers (autoprefixer). Also sourcemaps are generated for both.
 
 Note: Files need to be placed in their proper directories to be handled by the build workflow, e.g. any `.js` files must go inside `src/scripts/`. Subdirectories are allowed.
 
@@ -113,8 +113,8 @@ Private tasks are used internally by the public tasks and can not be run from co
 | create    | creates theme in Scroll Viewport                                                                 | -                  | -                           | -               |
 | fonts     | -                                                                                     | any                | src/fonts/                  | build/fonts/    |
 | images    | -                                                                                     | any                | src/images/                 | build/images/   |
-| scripts   | concats to single main.js, uglifies                                                   | .js                | src/scripts/                | build/          |
-| styles    | compiles .scss and .sass, concats with .css to single main.css, adds browser prefixes | .css, .sass, .scss | src/styles/                 | build/          |
+| scripts   | creates sourcemap, transpiles and adds backward compatibility, concats to single `main.js`, minifies | .js                | src/scripts/                | build/          |
+| styles    | creates sourcemap, compiles SASS, concats to single `main.css`, minifies, adds backward compatibility | .css, .sass, .scss | src/styles/                 | build/          |
 | markups   | -                                                                                     | .html, .vm         | src/markups/                | build/markups/  |
 | upload    | uploads file type or entire build dir to Scroll Viewport                                         | any                | build/ or build/[file type] | -               |
 
@@ -129,6 +129,8 @@ To customise the build workflow for *all* new themes, modify the `gulpfile.js` i
 - A `.gitignore` file is included to ignore any OS files as well as Node related files like the `node_modules` folder in case you use git to version control your theme (which you should!). This also means if clone a theme you need to run `npm install` again to install all dependencies.
 
 - Beware of using strict mode in script files. Since they are merged to one file, the script might behave differently than expected. If the top file has a strict mode directive, the whole file is executed in strict mode, if not then the whole file is executed in sloppy mode. If any part of your code relies on strict mode (or sloppy mode), e.g. `this` being undefined in a function, it will break. ⚠️
+
+- Make sure to include the `main.css` and `main.js` files in your `.html` file for the styles and scripts to get applied to your web page.
 
 ## Notes
 
