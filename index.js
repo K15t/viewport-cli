@@ -8,18 +8,23 @@ const args = require('args');
 const fs = require('fs-extra');
 const path = require('path');
 const replace = require('replace-in-file');
+const os = require('os');
 
-const { directoryExists, createDirectory, copyDirectory, directoryList } = require('./lib/files.js');
-const { askProperties, askConfig, chooseConfig } = require('./lib/inquirer.js');
+const { pathExists, createDirectory, copyDirectory, directoryList } = require('./lib/files.js');
+const { askTheme, askConfig, chooseConfig } = require('./lib/inquirer.js');
 const { showWelcome, showFinishedCreate, showFinishedConfig, showConfigFirst, showError } = require('./lib/chalk.js');
-const { validateConfig } = require('./lib/validate');
+const { regexVal, envTemplate } = require('./lib/validate.js');
 
 // ----------------- Configuration ----------------- //
 
 // ToDo: Change to home dir path
 const templateDirName = "templates";
+const vpconfigName = ".vpconfig.json";
+
 const templateDirPath = path.join(__dirname, templateDirName); // absolute path
-const vpconfigPath = path.join(__dirname, './vpconfig.json'); // absolute path
+const vpconfigPath = path.join(os.homedir(), vpconfigName); // absolute path
+
+// NOTE: The template object for validation is in lib/validate.js
 
 // ----------------- Commands ----------------- //
 
@@ -35,8 +40,8 @@ if (!args.sub[0]) {
 function create() {
     showWelcome();
 
-    if (directoryExists(vpconfigPath)) {
-        buildTheme()
+    if (pathExists(vpconfigPath)) {
+        createTheme()
             .then(showFinishedCreate)
             .catch(showError);
     } else {
@@ -47,13 +52,13 @@ function create() {
 function config() {
     showWelcome();
 
-    if (directoryExists(vpconfigPath)) {
+    if (pathExists(vpconfigPath)) {
         selectConfig()
-            .then(buildConfig)
+            .then(createConfig)
             .then(showFinishedConfig)
             .catch(showError);
     } else {
-        buildConfig({})
+        createConfig({})
             .then(showFinishedConfig)
             .catch(showError);
     }
@@ -62,33 +67,56 @@ function config() {
 
 // ----------------- Create ----------------- //
 
-async function buildTheme() {
+async function createTheme() {
 
     // get list of available templates
-    const templateList = directoryList(templateDirPath); // uses path relative to this file
+    const templateList = directoryList(templateDirPath);
+    if (!templateList.length) {
+        throw new Error(`No templates found in ${templateDirName}$ directory.`);
+    }
 
     // get list of available target environments
     const vpconfig = await fs.readJson(vpconfigPath); // exists since checked in create()
-    const envList = Object.keys(vpconfig);
+    const envNameList = Object.keys(vpconfig);
+    if (!envNameList.length) {
+        throw new Error(
+            "No target environments found in ~/.vpconfig.json. Please use \'viewport config\' to configure target environments.")
+    }
 
     // get properties of theme from user
-    const theme = await askProperties({ 'templateList': templateList, 'envList': envList });
+    const theme = await askTheme({ 'templateList': templateList, 'envNameList': envNameList });
 
-    // compute paths for theme
-    theme.srcPath = path.join(templateDirPath, theme.template); // absolute path of theme template
-    theme.destPath = path.join(process.cwd(), theme.name); // absolute path where theme should be created
+    // compute absolute paths for theme
+    theme.srcPath = path.join(templateDirPath, theme.template);
+    theme.destPath = path.join(process.cwd(), theme.name);
     theme.packageJsonPath = path.join(theme.destPath, 'package.json');
     theme.gulpfilePath = path.join(theme.destPath, 'gulpfile.js');
 
+    // validate chosen template
+    if (!pathExists(path.join(theme.srcPath, 'package.json'))) {
+        throw new Error(
+            `No package.json found in '${templateDirName}' directory.`);
+    }
+    if (!pathExists(path.join(theme.srcPath, 'gulpfile.js'))) {
+        throw new Error(
+            `No gulpfile.js found in '${templateDirName}' directory.`);
+    }
+
+    // validate chosen environment
+    if (!regexVal(envTemplate, vpconfig[theme.envName])) {
+        throw new Error(
+            `The target environment ${theme.envName} in ~/.vpconfig.json contains invalid properties. Please use 'viewport config\' to configure target environments.`);
+    }
+
     // create theme directory
-    if (directoryExists(theme.destPath)) {
+    if (pathExists(theme.destPath)) {
         throw new Error(`Can't create folder with name '${theme.destPath}' since it already exists.`)
     } else {
         await fs.ensureDir(theme.destPath);
     }
 
-    // copy theme template
-    if (directoryExists(theme.srcPath)) {
+    // copy template theme files into theme directory
+    if (pathExists(theme.srcPath)) {
         await fs.copy(theme.srcPath, theme.destPath);
     } else {
         throw new Error(`Can't copy template since source folder '${theme.srcPath}' doesn't exists.`)
@@ -117,28 +145,27 @@ async function buildTheme() {
 // ----------------- Initialize ----------------- //
 
 async function selectConfig() {
+
+    // get list of available target environments
     const vpconfig = await fs.readJson(vpconfigPath); // exists since checked in config()
-    validateConfig(vpconfig);
-    const existingEnvNames = Object.keys(vpconfig);
+    const envNameList = Object.keys(vpconfig); // could be empty array
 
     // list configs to choose from, either edit or add new one
-    const { envToEdit } = await chooseConfig({'choices': ['add...', ...existingEnvNames]});
+    const { envToEdit } = await chooseConfig({ 'choices': ['add...', ...envNameList] });
 
+    // return arguments for createConfig() in promise chain
     if (envToEdit == "add...") {
-        return {'existingEnvNames': existingEnvNames, 'vpconfig': vpconfig};
+        return { 'existingEnvNames': envNameList, 'vpconfig': vpconfig };
     } else {
-        const chosenConfig = vpconfig[envToEdit];
-        return {'existingEnvNames': existingEnvNames, 'defaultConfig': chosenConfig, 'vpconfig': vpconfig};
+        return { 'existingEnvNames': envNameList, 'defaultConfig': vpconfig[envToEdit], 'vpconfig': vpconfig };
     }
 }
 
-async function buildConfig({existingEnvNames = [], defaultConfig = {}, vpconfig = {}}) {
-// set defaultConfig to empty object instead of undefined so accessing non-existing properties in askConfig doesn't throw
+async function createConfig({ existingEnvNames = [], defaultConfig = {}, vpconfig = {} }) {
 
-    const config = await askConfig({existingEnvNames, defaultConfig});
+    const config = await askConfig({ existingEnvNames, defaultConfig });
 
-    // Note: overwrites if envName already exists, but has check implemented in askConfig
-    vpconfig[config.envName] = config;
+    vpconfig[config.envName] = config; // overwrites if envName already exists, but has check implemented in askConfig
 
     await fs.writeJson(vpconfigPath, vpconfig);
 
