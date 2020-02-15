@@ -10,11 +10,13 @@ const path = require('path');
 const replace = require('replace-in-file');
 
 const { directoryExists, createDirectory, copyDirectory, directoryList } = require('./lib/files.js');
-const { askProperties, askConfig } = require('./lib/inquirer.js');
-const { showWelcome, showFinishedCreate, showFinishedConfig, showConfigFirst, showError} = require('./lib/chalk.js');
+const { askProperties, askConfig, chooseConfig } = require('./lib/inquirer.js');
+const { showWelcome, showFinishedCreate, showFinishedConfig, showConfigFirst, showError } = require('./lib/chalk.js');
+const { validateConfig } = require('./lib/validate');
 
 // ----------------- Configuration ----------------- //
 
+// ToDo: Change to home dir path
 const templateDirName = "templates";
 const templateDirPath = path.join(__dirname, templateDirName); // absolute path
 const vpconfigPath = path.join(__dirname, './vpconfig.json'); // absolute path
@@ -45,9 +47,17 @@ function create() {
 function config() {
     showWelcome();
 
-    buildConfig()
-        .then(showFinishedConfig)
-        .catch(showError);
+    if (directoryExists(vpconfigPath)) {
+        selectConfig()
+            .then(buildConfig)
+            .then(showFinishedConfig)
+            .catch(showError);
+    } else {
+        buildConfig({})
+            .then(showFinishedConfig)
+            .catch(showError);
+    }
+
 }
 
 // ----------------- Create ----------------- //
@@ -57,8 +67,12 @@ async function buildTheme() {
     // get list of available templates
     const templateList = directoryList(templateDirPath); // uses path relative to this file
 
+    // get list of available target environments
+    const vpconfig = await fs.readJson(vpconfigPath); // exists since checked in create()
+    const envList = Object.keys(vpconfig);
+
     // get properties of theme from user
-    const theme = await askProperties({'templateList': templateList});
+    const theme = await askProperties({ 'templateList': templateList, 'envList': envList });
 
     // compute paths for theme
     theme.srcPath = path.join(templateDirPath, theme.template); // absolute path of theme template
@@ -86,16 +100,15 @@ async function buildTheme() {
     await fs.writeJson(theme.packageJsonPath, packageJson);
 
     // copy active environment config from vpconfig.json into gulpfile.js
-    const vpconfig = await fs.readJson(vpconfigPath); // exists since checked in create()
-    const activeEnv = vpconfig[vpconfig.activeEnv]; // extracts activeEnv object using computed property names
-    const regex = /(const\s+activeEnv\s*=\s*)(.*)(;)/i;
-    // matches variable declaration of "activeEnv", gulpfile.js must contain this pattern to be replaced properly!
-    // creates three capture groups, will keep the first and the third and replace only the second one, much simpler than positive lookaheads and lookbehinds
-    const activeEnvForGulpfile = {'themeName': theme.name, ...activeEnv};
+    const regex = /(const\s+themeData\s*=\s*)(.*)(;)/i;
+    // matches variable declaration of "themeData", gulpfile.js must contain this pattern to be replaced properly!
+    // creates three capture groups, will keep the first and the third and replace only the second one, much simpler than positive
+    // lookaheads and lookbehinds
+    const themeData = { 'themeName': theme.name, 'envName': theme.envName };
     await replace({
         'files': theme.gulpfilePath,
         'from': regex,
-        'to': `$1${JSON.stringify(activeEnvForGulpfile)}$3`
+        'to': `$1${JSON.stringify(themeData)}$3`
     });
 
     return theme; // for promise chain to continue
@@ -103,17 +116,31 @@ async function buildTheme() {
 
 // ----------------- Initialize ----------------- //
 
-async function buildConfig() {
+async function selectConfig() {
+    const vpconfig = await fs.readJson(vpconfigPath); // exists since checked in config()
+    validateConfig(vpconfig);
+    const existingEnvNames = Object.keys(vpconfig);
 
-    const vpconfig = directoryExists(vpconfigPath) ? await fs.readJson(vpconfigPath) : {activeEnv: {}};
+    // list configs to choose from, either edit or add new one
+    const { envToEdit } = await chooseConfig({'choices': ['add...', ...existingEnvNames]});
 
-    const config = await askConfig(vpconfig); // pass current vpconfig to provide default values
+    if (envToEdit == "add...") {
+        return {'existingEnvNames': existingEnvNames, 'vpconfig': vpconfig};
+    } else {
+        const chosenConfig = vpconfig[envToEdit];
+        return {'existingEnvNames': existingEnvNames, 'defaultConfig': chosenConfig, 'vpconfig': vpconfig};
+    }
+}
 
-    // Note: overwrites if env already exists, but for this case provided default values from existing env in askConfig() input dialog
-    vpconfig[config.env] = config;
-    vpconfig.activeEnv = config.env; // set active environment tracker to new environment
+async function buildConfig({existingEnvNames = [], defaultConfig = {}, vpconfig = {}}) {
+// set defaultConfig to empty object instead of undefined so accessing non-existing properties in askConfig doesn't throw
+
+    const config = await askConfig({existingEnvNames, defaultConfig});
+
+    // Note: overwrites if envName already exists, but has check implemented in askConfig
+    vpconfig[config.envName] = config;
 
     await fs.writeJson(vpconfigPath, vpconfig);
 
-    return vpconfig; // for promise chain to continue
+    return config; // for promise chain to continue
 }

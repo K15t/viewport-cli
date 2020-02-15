@@ -24,9 +24,9 @@ const autoprefixer  = require('autoprefixer'); // replace gulp-autoprefixer
 
 // --------------- Theme --------------- //
 
-const activeEnv = {};
+const themeData = {};
 
-const viewportTheme = new ViewportTheme(activeEnv);
+const theme = new ViewportTheme(themeData);
 
 // --------------- Folder structure --------------- //
 
@@ -67,16 +67,16 @@ const stylesGlob = ['**/*.scss', '**/*.sass', '**/*.css'].map(item => buildPath(
 const markupsGlob = ['**/*.html', '**/*.vm'].map(item => buildPath(srcDirOf('markups'), item));
 
 function create(done) {
-    if (viewportTheme.exists()) {
+    if (theme.exists()) {
         console.log('Theme with name \'' + activeEnv.themeName + '\' already exists.');
     } else {
-        viewportTheme.create();
+        theme.create();
     }
     done();
 }
 
 function clean() {
-    viewportTheme.removeAllResources();
+    theme.removeAllResources();
     return del(buildDir);
 }
 
@@ -121,10 +121,10 @@ function markups() {
 function upload(type) {
     if (Object.values(subDirs).includes(type)) {
         return src(buildDirOf(type))
-            .pipe(viewportTheme.upload());
+            .pipe(theme.upload());
     } else {
         return src(buildDir)
-            .pipe(viewportTheme.upload());
+            .pipe(theme.upload());
     }
 }
 
@@ -136,7 +136,7 @@ function startWatch(done) {
     } else {
         // ToDo: Error handling
     }
-    viewportTheme.on('uploaded', browserSync.reload);
+    theme.on('uploaded', browserSync.reload);
 
     // use anonymous functions since series() expects functions
     watch(fontsGlob, series(fonts, () => upload('fonts')));

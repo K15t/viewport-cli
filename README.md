@@ -20,7 +20,8 @@ npm install -g viewport-tools
 
 ### Usage
 
-1\. Configure `viewport-tools` to match your configuration of Scroll Viewport like the URL of your Confluence Server instance. The tool will guide you through it.
+<!-- ToDo: Make clearer.   -->
+1\. Add a target environment that matches your configuration of Scroll Viewport.
 ```javascript
 viewport config
 ```
@@ -56,20 +57,19 @@ npx gulp clean
 ## Documentation
 
 <!-- ToDo: finish -->
+### Target environments
+
+A target environment contains data like the URL of your Confluence Server instance, and the username and password. It is used in the build workflow by `gulp-viewport` to access Scroll Viewport to create, upload or clean your theme. Target environments are saved as objects in the hidden file `.vpconfig.json` in your home directory. You can add or edit target environments using `viewport config`.
+
+When creating a new theme, `viewport-tools` asks you to choose a target environment for your theme. The name of this target environment is then filled out in the `gulpfile.js` of your theme and `gulp-viewport` looks for a target environment with this name in the `.vpconfig.json`.
+
+**Beware:** The `vpconfig.json` is saved unencrypted and includes the username and password of your Confluence Server instance. Therefore you should use these tools only for development.
 
 ### Theme templates
 
 When creating a new theme `viewport-tools` offers to select from the available theme templates. By default the "default" theme template is selected which comes with a predefined folder structure and build workflow. It should fit most basic needs and is intended to get your started quickly.
 
 Theme templates are simply folders within in the `templates` folder in `viewport-tools`. Therefore you can even create your own theme templates and modify existing ones. A theme template must contain a `package.json` and a `gulpfile.js` which are used when creating a new theme from that template. The `package.json` is filled with the theme data you provide on theme creation like name, version and description. The `gulpfile.js` is filled with the configuration of your Scroll Viewport instance that you provided when configuring `viewport-tools`.
-
-### Target environments
-
-A target environment is a configuration of your Scroll Viewport instance and contains data like the URL of your Confluence Server, username and password. Target environments are saved in the `vpconfig.json` in the directory of `viewport-tools`. You can find out the directory using `where viewport`. When you create a new target environment it is added to the existing one, if you add an already existing one it is overwritten. The active target environment is always the latest one you added.
-
-When creating a new theme, `viewport-tools` takes the active target environment from the `vpconfig.json` and fills it into the `gulpfile.js` of the new theme. This allows the build workflow to upload your theme to Scroll Viewport (using `gulp-viewport`).
-
-**Beware:** The `vpconfig.json` is saved unencrypted and includes the username and password of your Confluence Server instance. Therefore you should use these tools only for development.
 
 ### "Default" theme template
 

@@ -2,9 +2,10 @@
 
 ## Misc
 
+- !!! CHECK: Is activeEnv object correct !!!
 - !!! CHECK: Does upload really work? !!!
-- Implement config switch
 - Make file helpers async
+- CHECK inquirer config question description
 
 ## Frameworks
 
