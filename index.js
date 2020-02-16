@@ -19,9 +19,8 @@ const { regexVal, envTemplate } = require('./lib/validate.js');
 
 // ToDo: Change to home dir path
 const templateDirName = "templates";
-const vpconfigName = ".vpconfig.json";
-
 const templateDirPath = path.join(__dirname, templateDirName); // absolute path
+const vpconfigName = ".vpconfig.json";
 const vpconfigPath = path.join(os.homedir(), vpconfigName); // absolute path
 
 // NOTE: The template object for validation is in lib/validate.js
@@ -80,7 +79,7 @@ async function createTheme() {
     const envNameList = Object.keys(vpconfig);
     if (!envNameList.length) {
         throw new Error(
-            "No target environments found in ~/.vpconfig.json. Please use \'viewport config\' to configure target environments.")
+            `No target environments found in ~/${vpconfigName}. Please use \'viewport config\' to configure target environments.`)
     }
 
     // get properties of theme from user
@@ -105,7 +104,7 @@ async function createTheme() {
     // validate chosen environment
     if (!regexVal(envTemplate, vpconfig[theme.envName])) {
         throw new Error(
-            `The target environment ${theme.envName} in ~/.vpconfig.json contains invalid properties. Please use 'viewport config\' to configure target environments.`);
+            `The target environment '${theme.envName}' in ~/${vpconfigName} contains invalid properties. Please use 'viewport config\' to configure target environments.`);
     }
 
     // create theme directory

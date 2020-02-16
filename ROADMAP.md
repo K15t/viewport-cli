@@ -4,6 +4,7 @@
 
 - !!! CHECK: Does upload really work? !!!
 - Make file helpers async
+- put proper validation from Scroll Viewport in `envTemplate`
 
 ## Frameworks
 

@@ -2,7 +2,7 @@
 
 ## 1.0.0
 
-K15t is proud to announce `viewport-tools` version 1.0.0 with long awaited improvements that make professional local theme development for Scroll Viewport possible again.
+Version 1.0.0 of `viewport-tools` comes with long awaited improvements that make local theme development for Scroll Viewport again possible with the newest versions of Node.
 
 ### Summary
 
@@ -10,7 +10,7 @@ K15t is proud to announce `viewport-tools` version 1.0.0 with long awaited impro
 
 - Theme templates aren't hardcoded anymore and then sourced from the internet on theme creation. Instead they are sourced dynamically from `themes` folder. User can add own theme templates or customize existing ones.
 
-- The build workflow was rewritten from scratch to be much more robust and independent of any frameworks. It uses contemporary dependencies, notably gulp 4 which means it works again with all recent versions of Node until v13 at the time of writing. The available tasks were simplified and the whole workflow was optimised to be faster.
+- The build workflow was rewritten from scratch to be much more robust and independent of any frameworks. It uses contemporary dependencies, notably gulp 4 which means it works again with all recent Node version until v13 at the time of writing. The available tasks were simplified and the whole workflow was optimised to be faster.
 
 ### `viewport-tools`
 

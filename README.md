@@ -1,4 +1,4 @@
-# README
+# Readme
 
 (Note: The commands and file paths below are written for UNIX but the packages themselves should run on Windows as well.)
 
@@ -56,7 +56,6 @@ npx gulp clean
 
 ## Documentation
 
-<!-- ToDo: finish -->
 ### Target environments
 
 A target environment contains data like the URL of your Confluence Server instance, and the username and password. It is used in the build workflow by `gulp-viewport` to access Scroll Viewport to create, upload or clean your theme. Target environments are saved as objects in the hidden file `.vpconfig.json` in your home directory. You can add or edit target environments using `viewport config`.
@@ -69,7 +68,7 @@ When creating a new theme, `viewport-tools` asks you to choose a target environm
 
 When creating a new theme `viewport-tools` offers to select from the available theme templates. By default the "default" theme template is selected which comes with a predefined folder structure and build workflow. It should fit most basic needs and is intended to get your started quickly.
 
-Theme templates are simply folders within in the `templates` folder in `viewport-tools`. Therefore you can even create your own theme templates and modify existing ones. A theme template must contain a `package.json` and a `gulpfile.js` which are used when creating a new theme from that template. The `package.json` is filled with the theme data you provide on theme creation like name, version and description. The `gulpfile.js` is filled with the configuration of your Scroll Viewport instance that you provided when configuring `viewport-tools`.
+Theme templates are simply folders within in the `templates` folder in `viewport-tools`. Therefore you can even create your own theme templates and modify existing ones. For example, you could copy the default template and add some JavaScript and CSS frameworks. A theme template must contain a `package.json` and a `gulpfile.js` which are used when creating a new theme from that template. The `package.json` is filled with the theme data you provide on theme creation like name, version and description. The `gulpfile.js` is filled with the name of a target environment and your theme.
 
 ### "Default" theme template
 
