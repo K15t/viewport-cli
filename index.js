@@ -13,7 +13,7 @@ const os = require('os');
 const { pathExists, createDirectory, copyDirectory, directoryList } = require('./lib/files.js');
 const { askTheme, askConfig, chooseConfig } = require('./lib/inquirer.js');
 const { showWelcome, showFinishedCreate, showFinishedConfig, showConfigFirst, showError } = require('./lib/chalk.js');
-const { regexVal, envTemplate } = require('./lib/validate.js');
+const { regexVal } = require('./lib/validate.js');
 
 // ----------------- Configuration ----------------- //
 
@@ -23,7 +23,18 @@ const templateDirPath = path.join(__dirname, templateDirName); // absolute path
 const vpconfigName = ".vpconfig.json";
 const vpconfigPath = path.join(os.homedir(), vpconfigName); // absolute path
 
-// NOTE: The template object for validation is in lib/validate.js
+// ToDo: put in proper restrictions from Scroll Viewport
+// ToDo: update inquirer help with restrictions as well.
+// Note: If you change something here change it in gulp-viewport as well!
+const envTemplate = {
+    'envName': /.*/i,
+    'confluenceBaseUrl': /^(https?):\/\/[^\s$.?#].[^\s]*[^/]$/i,
+    'username': /.*/i,
+    'password': /.*/i,
+    'scope': /.*/i,
+    'targetPath': /^(\.\/|\/)?(\w+\/)*$/i,
+    'sourcePath': /^(\.\/|\/)?(\w+\/)*$/i
+};
 
 // ----------------- Commands ----------------- //
 
@@ -162,7 +173,7 @@ async function selectConfig() {
 
 async function createConfig({ existingEnvNames = [], defaultConfig = {}, vpconfig = {} }) {
 
-    const config = await askConfig({ existingEnvNames, defaultConfig });
+    const config = await askConfig({ existingEnvNames, defaultConfig, 'envTemplate': envTemplate});
 
     vpconfig[config.envName] = config; // overwrites if envName already exists, but has check implemented in askConfig
 
