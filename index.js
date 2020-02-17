@@ -32,8 +32,8 @@ const envTemplate = {
     'username': /.*/i,
     'password': /.*/i,
     'scope': /.*/i,
-    'targetPath': /^(\.\/|\/)?(\w+\/)*$/i,
-    'sourcePath': /^(\.\/|\/)?(\w+\/)*$/i
+    'targetPath': /^(\.\/|\/)(\w+\/)*$/i,
+    'sourcePath': /^(\.\/|\/)(\w+\/)*$/i
 };
 
 // ----------------- Commands ----------------- //
