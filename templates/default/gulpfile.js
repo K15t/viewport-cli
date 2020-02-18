@@ -19,8 +19,8 @@ const terser        = require('gulp-terser');
 const sass          = require('gulp-sass');
 const cleancss      = require('gulp-clean-css');
 // const autoprefixer  = require('gulp-autoprefixer'); // currently broken with gulp-sourcemaps
-const postcss       = require('gulp-postcss'); // replace gulp-autoprefixer
-const autoprefixer  = require('autoprefixer'); // replace gulp-autoprefixer
+const postcss       = require('gulp-postcss'); // replaces gulp-autoprefixer
+const autoprefixer  = require('autoprefixer'); // replaces gulp-autoprefixer
 
 // --------------- Theme --------------- //
 
@@ -66,18 +66,17 @@ const scriptsGlob = ['**/*.js'].map(item => buildPath(srcDirOf('scripts'), item)
 const stylesGlob = ['**/*.scss', '**/*.sass', '**/*.css'].map(item => buildPath(srcDirOf('styles'), item));
 const markupsGlob = ['**/*.html', '**/*.vm'].map(item => buildPath(srcDirOf('markups'), item));
 
-function create(done) {
+function create() {
     if (theme.exists()) {
-        console.log('Theme with name \'' + activeEnv.themeName + '\' already exists.');
+        console.log('Theme with name \'' + themeData.themeName + '\' already exists.');
+        return Promise.reject(""); // ToDo: return sensible value
     } else {
-        theme.create();
+        return theme.create();
     }
-    done();
 }
 
 function clean() {
-    theme.removeAllResources();
-    return del(buildDir);
+    return Promise.all(theme.reset(), del(buildDir));
 }
 
 function fonts() {
@@ -107,7 +106,7 @@ function styles() {
         .pipe(concat('main.css'))
         .pipe(cleancss())
         //.pipe(autoprefixer()) // currently broken with gulp-sourcemaps
-        .pipe(postcss([autoprefixer()])) // replace gulp-autoprefixer
+        .pipe(postcss([autoprefixer()])) // replaces gulp-autoprefixer
         .pipe(sourcemaps.write())
         .pipe(dest(buildDir));
 }
@@ -119,31 +118,34 @@ function markups() {
 
 // ToDo: check if needs to specify sourceBase and targetPath in upload
 function upload(type) {
+    // if type argument is provided upload only files of that type
     if (Object.values(subDirs).includes(type)) {
-        return src(buildDirOf(type))
-            .pipe(theme.upload());
-    } else {
-        return src(buildDir)
-            .pipe(theme.upload());
+        return theme.upload(buildDirOf(type));
+    } // if not upload whole buildDir
+    else {
+        return theme.upload(buildDir);
     }
 }
 
+function syncBrowser() {
+    browserSync.reload();
+}
+
 function startWatch(done) {
-    if (activeEnv.confluenceBaseUrl) {
+    if (themeData.confluenceBaseUrl) {
         browserSync.init({
-            proxy: activeEnv.confluenceBaseUrl
+            proxy: themeData.confluenceBaseUrl
         });
     } else {
         // ToDo: Error handling
     }
-    theme.on('uploaded', browserSync.reload);
 
-    // use anonymous functions since series() expects functions
-    watch(fontsGlob, series(fonts, () => upload('fonts')));
-    watch(imagesGlob, series(images, () => upload('images')));
-    watch(scriptsGlob, series(scripts, () => upload('scripts')));
-    watch(stylesGlob, series(styles, () => upload('styles')));
-    watch(markupsGlob, series(markups, () => upload('markups')));
+    // use anonymous functions since upload(type) is a value and series() expects a function
+    watch(fontsGlob, series(fonts, () => upload('fonts'), browserSync));
+    watch(imagesGlob, series(images, () => upload('images'), browserSync));
+    watch(scriptsGlob, series(scripts, () => upload('scripts'), browserSync));
+    watch(stylesGlob, series(styles, () => upload('styles'), browserSync));
+    watch(markupsGlob, series(markups, () => upload('markups'), browserSync));
 
     done();
 }

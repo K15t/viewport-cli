@@ -3,7 +3,7 @@
 ## Misc
 
 - !!! CHECK: Does upload really work? !!!
-- Make file helpers async
+- Make file helpers async, await them in index.js
 - put proper validation from Scroll Viewport in `envTemplate`
 
 ## Frameworks
@@ -26,3 +26,4 @@
 - Integrate TypeScript
 - ? Integrate image compression
 - Add more error handling and console output
+- ? Optimise https://www.browsersync.io/ ?

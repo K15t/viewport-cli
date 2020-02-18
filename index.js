@@ -12,7 +12,7 @@ const os = require('os');
 
 const { pathExists, createDirectory, copyDirectory, directoryList } = require('./lib/files.js');
 const { askTheme, askConfig, chooseConfig } = require('./lib/inquirer.js');
-const { showWelcome, showFinishedCreate, showFinishedConfig, showConfigFirst, showError } = require('./lib/chalk.js');
+const { showWelcome, showFinishedCreate, showFinishedConfig, showConfigFirst, showError } = require('./lib/console.js');
 const { regexVal } = require('./lib/validate.js');
 
 // ----------------- Configuration ----------------- //
@@ -31,9 +31,7 @@ const envTemplate = {
     'confluenceBaseUrl': /^(https?):\/\/[^\s$.?#].[^\s]*[^/]$/i,
     'username': /.*/i,
     'password': /.*/i,
-    'scope': /.*/i,
-    'targetPath': /^(\.\/|\/)(\w+\/)*$/i,
-    'sourcePath': /^(\.\/|\/)(\w+\/)*$/i
+    'scope': /.*/i
 };
 
 // ----------------- Commands ----------------- //

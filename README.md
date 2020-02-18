@@ -121,7 +121,7 @@ Private tasks are used internally by the public tasks and can not be run from co
 
 The build above build workflow should work for most people. But nothing stops you from adapting it to your needs. For example, you could restricting images to only handle .jpeg and other image file types instead of all file types, or add a compression pipe to the markup files pipeline.
 
-To customise the build workflow for *all* new themes, modify the `gulpfile.js` in the template. Don't change the declaration of the `activeEnv` variable, because this is used by the `viewport-tools` to replace the content programmatically when creating a new theme. ⚠️
+To customise the build workflow for *all* new themes, modify the `gulpfile.js` in the template. Don't change the declaration of the `themeData` variable, because this is used by the `viewport-tools` to replace the content programmatically when creating a new theme. ⚠️
 
 #### Misc
 

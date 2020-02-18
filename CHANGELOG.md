@@ -32,6 +32,7 @@ Version 1.0.0 of `viewport-tools` comes with long awaited improvements that make
     - now keeps track of currently active environment and contains more information like "scope"
     - on theme creation fills out `gulpfile.js` with currently active config automatically, no need to manually edit it anymore, no hardcoded config, e.g. confluenceBaseUrl was left hardcoded in old "Basic" template, needed to be changed in every new theme created from it because it was downloaded from the Github repo each time.
     - much less error prone to edit a JSON instead of a file that could look arbitrarily
+    - removed `targetPath` and `sourcePath` from in favor of providing them as arguments to `upload()` method of `gulp-viewport` directly
 - Nicer visuals
 
 ### "default" theme template
