@@ -2,7 +2,6 @@
 
 ## Misc
 
-- !!! CHECK: Does upload really work? !!!
 - Make file helpers async, await them in index.js
 - put proper validation from Scroll Viewport in `envTemplate`
 

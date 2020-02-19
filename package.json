@@ -8,7 +8,8 @@
     "clear": "^0.1.0",
     "figlet": "^1.2.4",
     "fs-extra": "^8.1.0",
-    "inquirer": "^7.0.4"
+    "inquirer": "^7.0.4",
+    "replace-in-file": "^5.0.2"
   },
   "bin": {
     "viewport": "./index.js"

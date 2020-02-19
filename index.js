@@ -10,7 +10,7 @@ const path = require('path');
 const replace = require('replace-in-file');
 const os = require('os');
 
-const { pathExists, createDirectory, copyDirectory, directoryList } = require('./lib/files.js');
+const { directoryList } = require('./lib/files.js');
 const { askTheme, askConfig, chooseConfig } = require('./lib/inquirer.js');
 const { showWelcome, showFinishedCreate, showFinishedConfig, showConfigFirst, showError } = require('./lib/console.js');
 const { regexVal } = require('./lib/validate.js');
@@ -48,7 +48,7 @@ if (!args.sub[0]) {
 function create() {
     showWelcome();
 
-    if (pathExists(vpconfigPath)) {
+    if (fs.existsSync(vpconfigPath)) {
         createTheme()
             .then(showFinishedCreate)
             .catch(showError);
@@ -60,7 +60,7 @@ function create() {
 function config() {
     showWelcome();
 
-    if (pathExists(vpconfigPath)) {
+    if (fs.existsSync(vpconfigPath)) {
         selectConfig()
             .then(createConfig)
             .then(showFinishedConfig)
@@ -78,7 +78,7 @@ function config() {
 async function createTheme() {
 
     // get list of available templates
-    const templateList = directoryList(templateDirPath);
+    const templateList = await directoryList(templateDirPath);
     if (!templateList.length) {
         throw new Error(`No templates found in ${templateDirName}$ directory.`);
     }
@@ -101,13 +101,13 @@ async function createTheme() {
     theme.gulpfilePath = path.join(theme.destPath, 'gulpfile.js');
 
     // validate chosen template
-    if (!pathExists(path.join(theme.srcPath, 'package.json'))) {
+    if (!await fs.pathExists(path.join(theme.srcPath, 'package.json'))) {
         throw new Error(
-            `No package.json found in '${templateDirName}' directory.`);
+            `No package.json found in '${theme.template}' directory.`);
     }
-    if (!pathExists(path.join(theme.srcPath, 'gulpfile.js'))) {
+    if (!await fs.pathExists(path.join(theme.srcPath, 'gulpfile.js'))) {
         throw new Error(
-            `No gulpfile.js found in '${templateDirName}' directory.`);
+            `No gulpfile.js found in '${theme.template}' directory.`);
     }
 
     // validate chosen environment
@@ -117,14 +117,14 @@ async function createTheme() {
     }
 
     // create theme directory
-    if (pathExists(theme.destPath)) {
+    if (await fs.pathExists(theme.destPath)) {
         throw new Error(`Can't create folder with name '${theme.destPath}' since it already exists.`)
     } else {
         await fs.ensureDir(theme.destPath);
     }
 
     // copy template theme files into theme directory
-    if (pathExists(theme.srcPath)) {
+    if (await fs.pathExists(theme.srcPath)) {
         await fs.copy(theme.srcPath, theme.destPath);
     } else {
         throw new Error(`Can't copy template since source folder '${theme.srcPath}' doesn't exists.`)

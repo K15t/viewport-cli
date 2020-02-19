@@ -2,7 +2,7 @@
 
 ## 1.0.0
 
-Version 1.0.0 of `viewport-tools` comes with long awaited improvements that make local theme development for Scroll Viewport again possible with the newest versions of Node.
+Version 1.0.0 of `viewport-tools` comes with long awaited improvements that make local theme development for Scroll Viewport again possible with the newest versions of Node. It relies on the new `viewport-sync` tools which replace `gulp-viewport`.
 
 ### Summary
 
@@ -15,8 +15,9 @@ Version 1.0.0 of `viewport-tools` comes with long awaited improvements that make
 ### `viewport-tools`
 
 - Rewritten from scratch
-    - with ES6 syntax, strict mode, native promises
-    - much cleaner code, split into modules
+    - with ES6 syntax, strict mode, `const` variables
+    - much cleaner code, split into modules 
+- All functions are async and use promises
 - Templates are not hardcoded into `viewport-tools` anymore and downloaded on every theme creation, but instead taken from local `themes` folder
     - much faster, no internet connection needed on every theme creation
     - user isn't forced to make binary choice, instead free to use what he wants
@@ -24,15 +25,14 @@ Version 1.0.0 of `viewport-tools` comes with long awaited improvements that make
     - user can add their custom templates by adding into `themes` folder, even create their own, or download from anyone that offers (e.g. K15t)
     - user can even customise default template
     - also package can be locked using package-lock, if it works once it will continue to work, can't break because remote repo changes some file
-- human-readable `.viewportrc` in home directory was replaced by machine-readable `vpconfig.json` in `viewport-tools` directory
-    - `.viewportrc` wasn't used by themes anyways, only `viewport-tools` used it on theme creation
+- human-readable `.viewportrc` in home directory was replaced by machine-readable `vpconfig.json`
     - difficult to parse and modify human-readable file, JSON is much easier
-    - since `viewport-tools` are installed globally can just leave file in its directory, instead of cluttering home dir
-    - doesn't need to edit by hand since implemented modification directly in `viewport-tools`
-    - now keeps track of currently active environment and contains more information like "scope"
-    - on theme creation fills out `gulpfile.js` with currently active config automatically, no need to manually edit it anymore, no hardcoded config, e.g. confluenceBaseUrl was left hardcoded in old "Basic" template, needed to be changed in every new theme created from it because it was downloaded from the Github repo each time.
     - much less error prone to edit a JSON instead of a file that could look arbitrarily
-    - removed `targetPath` and `sourcePath` from in favor of providing them as arguments to `upload()` method of `gulp-viewport` directly
+    - doesn't need to edit by hand since implemented modification interface directly in `viewport-tools`
+    - the new `viewport-sync` makes use of it, loading is easier, needs to pass it only `envName` when instantiating, i.e. no hardcoded config, e.g. `confluenceBaseUrl` was left hardcoded in old "Basic" template, needed to be changed in every new theme created from it because it was downloaded from the Github repo each time.
+    - on theme creation fills out `gulpfile.js` with selected config automatically, no need to manually edit it anymore
+    - added `scope` property
+    - removed `targetPath` and `sourcePath` in favor of providing them as arguments to `upload()` method of `viewport-sync` directly
 - Nicer visuals
 
 ### "default" theme template
@@ -44,7 +44,7 @@ Version 1.0.0 of `viewport-tools` comes with long awaited improvements that make
 #### `gulpfile.js`
 
 - rewritten from scratch, ES6 syntax, cleaner code
-- uses gulp 4, doesn't break anymore
+- uses gulp 4, doesn't break anymore with recent versions of Node
     - uses `parallel()` and `series()` methods instead of [] syntax, faster with parallel processing when possible
     - uses native exports object to register tasks instead of `task()` method
 - remove / replace old dependencies, update existing ones
