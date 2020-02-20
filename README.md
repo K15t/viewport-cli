@@ -4,23 +4,23 @@
 
 ## Introduction
 
-The `viewport-tools` package is a simple command line tool to set up a local theme development environment for Scroll Viewport. Creating themes locally enables you to work in your favorite IDE instead of the built-in Theme Editor of Scroll Viewport in the browser. `viewport-tools` sets up the powerful task manager `gulp` to take care of building and uploading your theme to Scroll Viewport. It also comes with customizable theme templates that you can choose from to get you started quickly.
+The `viewport-tools` package is a simple command line tool to set up a local theme development environment for Scroll Viewport. Creating themes locally enables you to develop themes for Scroll Viewport in your favorite IDE instead of Scroll Viewport's built-in Theme Editor in the browser. `viewport-tools` comes with customizable theme templates that use the powerful task manager `gulp` to take care of building and uploading your theme to Scroll Viewport. It is intended to get you started quickly.
 
 
 ## Getting started
 
 ### Installation
 
-0. Have Confluence Server up and running with the Scroll Viewport add-on (see [insert URL](#)).
+1. Install Confluence Server and the Scroll Viewport add-on (see [insert URL](#)).
 1. Install Node.js, `npm` and `npx`. We recommend using `nvm` to install Node.
-2. Install `viewport-tools` globally
+1. Install `viewport-tools` _globally_ to be able to run in from everywhere
 ```bash
 npm install -g viewport-tools
 ```
 
 ### Usage
 
-The tool will guide you through all the steps. More detailed explanation see below in the documentation.
+The tool will guide you through all the steps. Each step is covered in more detail in the documentation below.
 
 <!-- ToDo: Make clearer.   -->
 1\. Add a target environment that matches your configuration of Scroll Viewport. You need to provide information like URL of your Confluence Server instance, username and password.
@@ -33,24 +33,24 @@ cd <your-working-directory>
 viewport create
 ```
 
-3\. From within your theme folder install the dependencies for `gulp`.
+3\. From within your theme folder, install the dependencies for `gulp`.
 ```javascript
 cd <your-theme-name>
 npm install
 ```
 
-4\. Write some source code. (Make sure to put the files in their proper directories for the build workflow to work properly).
+4\. Write some source code. (Make sure to put the files in their proper directories for the build workflow to work properly. Also make sure to include the `main.css` and `main.js` files in your markup file for the styles and scripts to get applied to your web page).
 
-5\. From within your theme folder build the project and upload it to Scroll Viewport using `gulp` and the tasks defined by your theme template. The "default" theme template provides the following tasks:
+5\. From within your newly created theme folder, build the project and upload it to Scroll Viewport using the `gulp` tasks defined by the chosen theme template. The "default" theme template provides the following tasks:
 - Builds and uploads the theme to Scroll Viewport.
  ```javascript
  npx gulp build
  ```
-- Continuously builds and uploads the theme to Scroll Viewport as soon as you make changes. If `viewport-tools` was properly configured, it opens the browser and automatically refreshes. Stop it using <kbd>CTRL</kbd> + <kbd>C</kbd>.
+- Continuously builds and uploads the theme to Scroll Viewport as soon as you make changes. If `viewport-tools` was properly configured, it opens the browser and automatically refreshes the site. Stop it using <kbd>CTRL</kbd> + <kbd>C</kbd>.
  ```javascript
  npx gulp watch
  ```
-- Resets the theme. This normally shouldn't be needed as it is part of the build workflow already.
+- Resets the theme in Scroll Viewport. This normally shouldn't be needed as it is part of the build workflow already.
 ```javascript
 npx gulp clean
 ```
@@ -60,23 +60,21 @@ npx gulp clean
 
 ### Target environments
 
-A target environment contains data like the URL of your Confluence Server instance, and the username and password. It is used in the build workflow by `viewport-sync` to access Scroll Viewport to create, upload or clean your theme. Target environments are saved as objects in the hidden file `.vpconfig.json` in your home directory. You can add or edit target environments using `viewport config`.
+A target environment contains data like the URL of your Confluence Server instance, and the username and password. When creating a new theme, `viewport-tools` asks you to choose one of the available target environments for your theme. In the build workflow, this is then used by `viewport-sync` to communicate with Scroll Viewport to create, upload or clean your theme. You can add or edit target environments using `viewport config`.
 
-When creating a new theme, `viewport-tools` asks you to choose a target environment for your theme. The name of this target environment is then filled out in the `gulpfile.js` of your theme and `viewport-sync` looks for a target environment with this name in the `.vpconfig.json`. (Read below how it transfers this into the `gulpfile.js` and what you should bear in mind before modifying any part of it.)
+Target environments are saved as objects in the hidden file `.vpconfig.json` in your home directory. When creating a theme, the name of the selected target environment is filled out in the `gulpfile.js`. Upon running the build workflow, `viewport-sync` is instantiated with the name of the target environment and looks for a target environment with this name in the `.vpconfig.json`. (Read more below how it transfers the name of the target environment into the `gulpfile.js` and what you should bear in mind before modifying it.)
 
 **Beware:** The `vpconfig.json` is saved unencrypted and includes the username and password of your Confluence Server instance. Therefore you should use these tools only for development.
 
 ### Theme templates
 
-When creating a new theme `viewport-tools` offers to select from the available theme templates. By default the "default" theme template is selected which comes with a predefined folder structure and build workflow. It should fit most basic needs and is intended to get your started quickly.
-
-Theme templates are simply folders within in the `templates` folder in `viewport-tools`. Therefore you can even create your own theme templates and modify existing ones. For example, you could copy the default template and add some JavaScript and CSS frameworks. A theme template must contain a `package.json` and a `gulpfile.js` which get filled with the information you provide upon creating a new theme from that template. The `package.json` is filled with the theme data you provide on theme creation like name, version and description. The `gulpfile.js` is filled with the name of the selected target environment and your theme name.
+When creating a new theme, `viewport-tools` offers to select from the available theme templates. By default, the "default" theme template is selected which comes with a predefined folder structure and average build workflow. It is intended to get you started quickly and can always be customized later.
 
 ### "Default" theme template
 
 #### Folder structure
 
-The "default" theme comes with the following folder structure. A `src` folder is used for all source code. Each file type should go in its corresponding subdirectory.
+The "default" theme comes with the following folder structure. The `src` folder is intended for all source code. Each file type should go in its corresponding subdirectory as follows:
 
 - `fonts` for font files
 - `images` for image files
@@ -84,25 +82,27 @@ The "default" theme comes with the following folder structure. A `src` folder is
 - `scripts` for script files, e.g. `.js`, `.ts`
 - `styles` for style files, e.g. `.css`, `.sass`, `.scss`
 
-The build workflow then creates a `build` folder with same subfolders.
+The build workflow then creates a `build` folder with the same subfolders (provided the source folders are non-empty).
+
+A `.gitignore` file is included to ignore any OS files as well as Node related files like the `node_modules` folder, in case you use git to version control your theme (which you should!). This also means if you clone a theme you need to run `npm install` again to install all dependencies.
 
 Note: Changing the folder structure means the build workflow in the `gulpfile.js` needs to be adapted as well! ⚠️
 
 #### Build workflow
 
-The task manager `gulp` is used to automate the build workflow of a theme. The workflow is defined in the `gulpfile.js`. The predefined build workflow should work for most people, but you can customise it if you want. By default, script files are transpiled and made backwards compatible for older browsers (Babel), merged into one file and minified. Style files are compiled (Sass), merged into one file, minified, and made backwards compatible for older browsers (autoprefixer). Also sourcemaps are generated for both. Currently, frameworks are not handled separately from any other file placed in the source directory. It might make sense to exclude them from the merging pipeline for example. This is something on the Roadmap already.
+The task manager `gulp` is used to automate the build workflow of a theme. The workflow is defined in the `gulpfile.js`. The "default" theme comes with a predefined build workflow that. By default, script files are transpiled and made backwards compatible for older browsers (Babel), merged into one file and minified. Style files are compiled (Sass), merged into one file, minified, and made backwards compatible for older browsers (autoprefixer). Sourcemaps are generated for both. All these tools are used with their default settings. Currently, frameworks are not handled separately from any other file placed in the source directory. It might make sense to exclude them from the merging pipeline for example. This is something on the Roadmap already.
 
-Note: Files need to be placed in their proper directories to be handled by the build workflow, e.g. any `.js` files must go inside `src/scripts/`. Subdirectories are allowed. ⚠️
+Note: Files need to be placed in their proper directories to be handled by the build workflow, e.g. any `.js` files must go inside `src/scripts/`. Subdirectories are allowed.
 
 ##### Tasks
 
-Public tasks can be run from anywhere within the theme folder using `npx gulp <task-name>`.
+Public tasks can be run from anywhere within the theme folder using `npx gulp <task-name>`. The following table shows the available tasks along with a description and the order of subtasks.
 
 | Task name | Subtasks                                                       | Description                                                                 |
 | --------- | -------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | clean     | -                                                              | deletes build directory locally and in Scroll Viewport                                 |
 | build     | create, clean, fonts, images, scripts, styles, markups, upload | builds theme and uploads it to Scroll Viewport                                         |
-| watch     | build, [respective task for changed file, upload]              | builds theme and uploads it to Scroll Viewport on every file change, refreshes browser |
+| watch     | build, [respective task for changed file], [respective upload for changed file]              | builds theme and uploads it to Scroll Viewport on every file change, refreshes browser |
 
 ##### Subtasks
 
@@ -113,28 +113,27 @@ Private tasks are used internally by the public tasks and can not be run from th
 | create    | creates theme in Scroll Viewport (if it doesn't exist yet)                                                                | -                  | -                           | -               |
 | fonts     | -                                                                                     | any                | src/fonts/                  | build/fonts/    |
 | images    | -                                                                                     | any                | src/images/                 | build/images/   |
-| scripts   | creates sourcemap, transpiles and adds backward compatibility, concats to single `main.js`, minifies | .js                | src/scripts/                | build/          |
-| styles    | creates sourcemap, compiles SASS, concats to single `main.css`, minifies, adds backward compatibility | .css, .sass, .scss | src/styles/                 | build/          |
+| scripts   | creates sourcemap, transpiles and adds backward compatibility (Babel), concats to single `main.js`, minifies | .js                | src/scripts/                | build/          |
+| styles    | creates sourcemap, preprocesses (Sass), concats to single `main.css`, minifies, adds backward compatibility | .css, .sass, .scss | src/styles/                 | build/          |
 | markups   | -                                                                                     | .html, .vm         | src/markups/                | build/markups/  |
 | upload    | uploads file type or entire build dir to Scroll Viewport                                         | any                | build/ or build/[file type] | -               |
 
-Note: Make sure to include the `main.css` and `main.js` files in your `.html` file for the styles and scripts to get applied to your web page.
+Note: The `main.css` and `main.js` files must be referenced in the markup file for styles and scripts to get applied to the web page.
 
-#### Custom build workflow
+Note 2: Beware of using strict mode in script files. Since they are merged to one file, the script might behave differently than expected. If the top most file happens to have a strict mode directive, the whole file is executed in strict mode. If not, then the whole file is executed in sloppy mode. If any part of your code relies on strict mode (or equally sloppy mode), e.g. `this` being undefined in a function, your script will behave differently than intended. ⚠️
 
-The above build workflow should work for most people. But nothing stops you from adapting it to your needs. For example, you could restricting images to only handle .jpeg and other image file types instead of all file types, or add a compression pipe to the markup files pipeline.
+### Custom theme templates
 
-Note: To customise the build workflow for *all* new themes, modify the `gulpfile.js` in the template. Don't change the declaration of the `themeData` variable, because this is used by the `viewport-tools` to replace the content programmatically when creating a new theme. ⚠️
+Theme templates are simply folders within in the `templates` folder in the `viewport-tools` installation directory. You can create your own theme templates just by creating a new folder or modify existing ones. You could place the resources you definitely need for every theme like JavaScript and CSS frameworks to your theme template. Or your could customise the build workflow, like adding a compression pipe to the images pipeline, or adding a linter to the scripts pipeline.
 
-#### Misc
+A theme template must contain a `package.json` and a `gulpfile.js`. These get filled with the information you provide when creating a new theme from that template. The `package.json` is filled with the theme data like name, version and description. The `gulpfile.js` is filled with the name of the selected target environment and the theme name. It's probably best to duplicate the "default" theme template and start to modify that.
 
-- A `.gitignore` file is included to ignore any OS files as well as Node related files like the `node_modules` folder, in case you use git to version control your theme (which you should!). This also means if you clone a theme you need to run `npm install` again to install all dependencies.
+Note: Make sure to not change the declaration of the `themeData` variable in the `gulpfile.js` because this is where `viewport-tools` fills in the theme name and the selected target environment. ⚠️
 
-- Beware of using strict mode in script files. Since they are merged to one file, the script might behave differently than expected. If the top most file happens to have a strict mode directive, the whole file is executed in strict mode. If not, then the whole file is executed in sloppy mode. If any part of your code relies on strict mode (or equally sloppy mode), e.g. `this` being undefined in a function, your script will behave differently than intended. ⚠️
 
 ## Notes
 
-- A theme is actually a NPM package. Though it is not designed to be published. The `package.json` is only intended to load the dependencies for `gulp`. Having a separate `node_modules` subdirectory with the same dependencies for every theme created is certainly not the most space efficient way, but `gulp` is not designed to work globally and will only work if contained in the theme directory. If you want to exchange themes between different machines, it might even benefit you that each theme contains all of its dependencies and can run on the other machine without needing to set up anything, except having Node.js and npm installed. Also the `.gitignore` file already takes care of not backing up the dependencies to your Git repository.
+- A theme is actually a NPM package since it contains a `package.json`. Though it is not designed to be published. NPM is only used to load the dependencies for `gulp`. Having a separate `node_modules` subdirectory with the same dependencies for every theme created is certainly not the most space efficient way, but `gulp` is not designed to work globally and will only work if contained in the theme directory. If you want to exchange themes between different machines, it might even benefit you that each theme contains all of its dependencies and can run on the other machine without needing to set up anything, except having Node.js and npm installed. Also the `.gitignore` file already takes care of not backing up the dependencies to your Git repository.
 
 - The dependencies like `gulp`, `viewport-sync`, etc. of the theme package are installed as `devDependencies` which means they won't be installed if the Node environment is set to `production`. (Also they wouldn't be included if the theme package were to be published, which it isn't intended to anyways.). For most people this shouldn't be a problem since Node is by default in `development` mode.
 
