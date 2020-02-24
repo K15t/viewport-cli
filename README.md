@@ -20,9 +20,8 @@ npm install -g viewport-tools
 
 ### Usage
 
-The tool will guide you through all the steps. Each step is covered in more detail in the documentation below.
+The tool will guide you through all the steps. What happens in each step is covered in more detail in the documentation below.
 
-<!-- ToDo: Make clearer.   -->
 1\. Add a target environment that matches your configuration of Scroll Viewport. You need to provide information like URL of your Confluence Server instance, username and password.
 ```javascript
 viewport config
