@@ -32,43 +32,43 @@ const theme = new ViewportTheme(themeData);
 // --------------- Folder structure --------------- //
 
 class Paths {
-
-    // make src and bld objects private
-    #src = {};
-    #bld = {};
-
+    
     constructor() {
+        // make src and bld objects to store paths
+        this.src = {};
+        this.bld = {};
+        
         // source and build directories relative to CWD
         this.srcDir = 'src/';
         this.bldDir = 'build/';
 
         // sub-directories relative to srcDir
-        this.#src.fonts = 'fonts/';
-        this.#src.images = 'images/';
-        this.#src.markups = 'markups/';
-        this.#src.scripts = 'scripts/';
-        this.#src.styles = 'styles/';
+        this.src.fonts = 'fonts/';
+        this.src.images = 'images/';
+        this.src.markups = 'markups/';
+        this.src.scripts = 'scripts/';
+        this.src.styles = 'styles/';
 
         // sub-directories relative to bldDir
-        this.#bld.fonts = 'fonts/';
-        this.#bld.images = 'images/';
-        this.#bld.markups = 'markups/';
-        this.#bld.scripts = ''; // concatenated main.js lies in top-level
-        this.#bld.styles = ''; // concatenated main.css lies in top-level
+        this.bld.fonts = 'fonts/';
+        this.bld.images = 'images/';
+        this.bld.markups = 'markups/';
+        this.bld.scripts = ''; // concatenated main.js lies in top-level
+        this.bld.styles = ''; // concatenated main.css lies in top-level
 
         // source globs relative to corresponding sub-directories
-        this.#src.fontsGlob = ['**'];
-        this.#src.imagesGlob = ['**'];
-        this.#src.markupsGlob = ['**/*.html', '**/*.vm'];
-        this.#src.scriptsGlob = ['**/*.js'];
-        this.#src.stylesGlob = ['**/*.scss', '**/*.sass', '**/*.css'];
+        this.src.fontsGlob = ['**'];
+        this.src.imagesGlob = ['**'];
+        this.src.markupsGlob = ['**/*.html', '**/*.vm'];
+        this.src.scriptsGlob = ['**/*.js'];
+        this.src.stylesGlob = ['**/*.scss', '**/*.sass', '**/*.css'];
 
         // build globs relative to corresponding sub-directories
-        this.#bld.fontsGlob = ['**'];
-        this.#bld.imagesGlob = ['**'];
-        this.#bld.markupsGlob = ['**/*.html', '**/*.vm'];
-        this.#bld.scriptsGlob = ['main.js']; // concatenated to single main.js
-        this.#bld.stylesGlob = ['main.css']; // concatenated to single main.css
+        this.bld.fontsGlob = ['**'];
+        this.bld.imagesGlob = ['**'];
+        this.bld.markupsGlob = ['**/*.html', '**/*.vm'];
+        this.bld.scriptsGlob = ['main.js']; // concatenated to single main.js
+        this.bld.stylesGlob = ['main.css']; // concatenated to single main.css
 
         // general source and build globs relative to source and build directories
         this.srcGlob = path.join(this.srcDir, '**');
@@ -77,8 +77,8 @@ class Paths {
 
     // computes source directory of a type, e.g. 'src/markups/'
     srcDirOf(type) {
-        if (this.#src.hasOwnProperty(type)) {
-            return path.join(this.srcDir, this.#src[type]);
+        if (this.src.hasOwnProperty(type)) {
+            return path.join(this.srcDir, this.src[type]);
         } else {
             throw new Error(`No source path for type \'${type}\' found.`);
         }
@@ -86,8 +86,8 @@ class Paths {
 
     // computes build directory of a type, e.g. 'build/markups/'
     bldDirOf(type) {
-        if (this.#bld.hasOwnProperty(type)) {
-            return path.join(this.bldDir, this.#bld[type]);
+        if (this.bld.hasOwnProperty(type)) {
+            return path.join(this.bldDir, this.bld[type]);
         } else {
             throw new Error(`No build path for type \'${type}\' found.`);
         }
@@ -95,8 +95,8 @@ class Paths {
 
     // computes glob for source files of a type, e.g. '['src/markups/**/*.html', 'src/markups/**/*.vm']'
     srcGlobOf(type) {
-        if (this.#src.hasOwnProperty(type + 'Glob') && this.#src.hasOwnProperty(type)) {
-            return this.#src[type + 'Glob'].map(item => path.join(this.srcDirOf(type), item));
+        if (this.src.hasOwnProperty(type + 'Glob') && this.src.hasOwnProperty(type)) {
+            return this.src[type + 'Glob'].map(item => path.join(this.srcDirOf(type), item));
         } else {
             throw new Error(`No source glob for type \'${type}\' found.`);
         }
@@ -104,8 +104,8 @@ class Paths {
 
     // computes glob for build files of a type, e.g. '['build/markups/**/*.html', 'build/markups/**/*.vm']'
     bldGlobOf(type) {
-        if (this.#bld.hasOwnProperty(type + 'Glob') && this.#bld.hasOwnProperty(type)) {
-            return this.#bld[type + 'Glob'].map(item => path.join(this.bldDirOf(type), item));
+        if (this.bld.hasOwnProperty(type + 'Glob') && this.bld.hasOwnProperty(type)) {
+            return this.bld[type + 'Glob'].map(item => path.join(this.bldDirOf(type), item));
         } else {
             throw new Error(`No build glob for type \'${type}\' found.`);
         }
