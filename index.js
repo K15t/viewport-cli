@@ -17,21 +17,20 @@ const { regexVal } = require('./lib/validate.js');
 
 // ----------------- Configuration ----------------- //
 
-// ToDo: Change to home dir path
 const templateDirName = "templates";
 const templateDirPath = path.join(__dirname, templateDirName); // absolute path
 const vpconfigName = ".vpconfig.json";
 const vpconfigPath = path.join(os.homedir(), vpconfigName); // absolute path
 
-// ToDo: put in proper restrictions from Scroll Viewport
+// ToDo: put in proper restrictions from Scroll Viewport for envName, username, password
 // ToDo: update inquirer help with restrictions as well.
-// Note: If you change something here change it in gulp-viewport as well!
+// Note: If you change something here change it in viewport-sync as well!
 const envTemplate = {
     'envName': /.*/i,
     'confluenceBaseUrl': /^(https?):\/\/[^\s$.?#].[^\s]*[^/]$/i,
     'username': /.*/i,
     'password': /.*/i,
-    'scope': /.*/i
+    'scope': /^[a-z0-9]{0,255}$/i, // https://confluence.atlassian.com/doc/space-keys-829076188.html
 };
 
 // ----------------- Commands ----------------- //

@@ -8,7 +8,7 @@ const { src, dest, series, parallel, watch } = require('gulp');
 const del = require('del');
 const path = require('path');
 
-const ViewportTheme = require('gulp-viewport');
+const ViewportTheme = require('viewport-sync');
 const browserSync = require('browser-sync').create();
 
 const concat = require('gulp-concat');
@@ -19,7 +19,7 @@ const terser = require('gulp-terser');
 
 const sass = require('gulp-sass');
 const cleancss = require('gulp-clean-css');
-// const autoprefixer  = require('gulp-autoprefixer'); // currently broken with gulp-sourcemaps
+// const autoprefixer  = require('gulp-autoprefixer'); // currently breaks when using gulp-sourcemaps
 const postcss = require('gulp-postcss'); // replaces gulp-autoprefixer
 const autoprefixer = require('autoprefixer'); // replaces gulp-autoprefixer
 
@@ -31,73 +31,133 @@ const theme = new ViewportTheme(themeData);
 
 // --------------- Folder structure --------------- //
 
-const srcDir = 'src';
-const buildDir = 'build';
+class Paths {
 
-const subDirs = {
-    fonts: 'fonts',
-    images: 'images',
-    markups: 'markups',
-    scripts: 'scripts',
-    styles: 'styles'
-};
+    // make src and bld objects private
+    #src = {};
+    #bld = {};
 
-function srcDirOf(type) {
-    return subDirs[type] && path.join(srcDir, subDirs[type]); // returns left most falsy operand, last one if all are truthy, i.e.
-                                                              // undefined if type is invalid
+    constructor() {
+        // source and build directories relative to CWD
+        this.srcDir = 'src/';
+        this.bldDir = 'build/';
+
+        // sub-directories relative to srcDir
+        this.#src.fonts = 'fonts/';
+        this.#src.images = 'images/';
+        this.#src.markups = 'markups/';
+        this.#src.scripts = 'scripts/';
+        this.#src.styles = 'styles/';
+
+        // sub-directories relative to bldDir
+        this.#bld.fonts = 'fonts/';
+        this.#bld.images = 'images/';
+        this.#bld.markups = 'markups/';
+        this.#bld.scripts = ''; // concatenated main.js lies in top-level
+        this.#bld.styles = ''; // concatenated main.css lies in top-level
+
+        // source globs relative to corresponding sub-directories
+        this.#src.fontsGlob = ['**'];
+        this.#src.imagesGlob = ['**'];
+        this.#src.markupsGlob = ['**/*.html', '**/*.vm'];
+        this.#src.scriptsGlob = ['**/*.js'];
+        this.#src.stylesGlob = ['**/*.scss', '**/*.sass', '**/*.css'];
+
+        // build globs relative to corresponding sub-directories
+        this.#bld.fontsGlob = ['**'];
+        this.#bld.imagesGlob = ['**'];
+        this.#bld.markupsGlob = ['**/*.html', '**/*.vm'];
+        this.#bld.scriptsGlob = ['main.js']; // concatenated to single main.js
+        this.#bld.stylesGlob = ['main.css']; // concatenated to single main.css
+
+        // general source and build globs relative to source and build directories
+        this.srcGlob = path.join(this.srcDir, '**');
+        this.bldGlob = path.join(this.bldDir, '**');
+    }
+
+    // computes source directory of a type, e.g. 'src/markups/'
+    srcDirOf(type) {
+        if (this.#src.hasOwnProperty(type)) {
+            return path.join(this.srcDir, this.#src[type]);
+        } else {
+            throw new Error(`No source path for type \'${type}\' found.`);
+        }
+    }
+
+    // computes build directory of a type, e.g. 'build/markups/'
+    bldDirOf(type) {
+        if (this.#bld.hasOwnProperty(type)) {
+            return path.join(this.bldDir, this.#bld[type]);
+        } else {
+            throw new Error(`No build path for type \'${type}\' found.`);
+        }
+    }
+
+    // computes glob for source files of a type, e.g. '['src/markups/**/*.html', 'src/markups/**/*.vm']'
+    srcGlobOf(type) {
+        if (this.#src.hasOwnProperty(type + 'Glob') && this.#src.hasOwnProperty(type)) {
+            return this.#src[type + 'Glob'].map(item => path.join(this.srcDirOf(type), item));
+        } else {
+            throw new Error(`No source glob for type \'${type}\' found.`);
+        }
+    }
+
+    // computes glob for build files of a type, e.g. '['build/markups/**/*.html', 'build/markups/**/*.vm']'
+    bldGlobOf(type) {
+        if (this.#bld.hasOwnProperty(type + 'Glob') && this.#bld.hasOwnProperty(type)) {
+            return this.#bld[type + 'Glob'].map(item => path.join(this.bldDirOf(type), item));
+        } else {
+            throw new Error(`No build glob for type \'${type}\' found.`);
+        }
+    }
 }
 
-function buildDirOf(type) {
-    return subDirs[type] && path.join(buildDir, subDirs[type]); // returns left most falsy operand, last one if all are truthy, i.e.
-                                                                // undefined if type is invalid
-}
+const paths = new Paths();
 
 // --------------- Tasks --------------- //
 
-exports.clean = clean;
+exports.clean = series(create, clean);
 exports.build = series(create, clean, parallel(fonts, images, scripts, styles, markups), upload);
-exports.watch = series(exports.build, startWatch);
-
-// The globs of files for `src()` and `dest()`, path is taken relative to CWD
-// can restrict file types by modifying globs in array, e.g. **/*.jpg for images to restrict to .jpg files
-// e.g. stylesGlob currently results in ['src/styles/**/*.scss', 'src/styles/**/*.sass', 'src/styles/**/*.css']
-// ToDo: restrict to font data types e.g. fonts/**/*.woff, valid image data types e.g. fonts/**/*.jpg
-const fontsGlob = ['**'].map(item => path.join(srcDirOf('fonts'), item));
-const imagesGlob = ['**'].map(item => path.join(srcDirOf('images'), item));
-const scriptsGlob = ['**/*.js'].map(item => path.join(srcDirOf('scripts'), item));
-const stylesGlob = ['**/*.scss', '**/*.sass', '**/*.css'].map(item => path.join(srcDirOf('styles'), item));
-const markupsGlob = ['**/*.html', '**/*.vm'].map(item => path.join(srcDirOf('markups'), item));
+exports.watch = series(exports.build, initialiseBrowser, startWatch);
 
 function create() {
-    return theme.create(); // existance check is implemented in viewport-sync
+    return theme.create(); // existence check is implemented in viewport-sync
 }
 
 function clean() {
-    return Promise.all(theme.reset(), del(buildDir));
+    return (async () => {
+        await theme.reset();
+        await del(paths.bldDir);
+    })();
 }
 
 function fonts() {
-    return src(fontsGlob)
-        .pipe(dest(buildDirOf('fonts')));
+    return src(paths.srcGlobOf('fonts'))
+        .pipe(dest(paths.bldDirOf('fonts')));
 }
 
 function images() {
-    return src(imagesGlob)
-        .pipe(dest(buildDirOf('images')));
+    return src(paths.srcGlobOf('images'))
+        .pipe(dest(paths.bldDirOf('images')));
+}
+
+function markups() {
+    return src(paths.srcGlobOf('markups'))
+        .pipe(dest(paths.bldDirOf('markups')));
 }
 
 function scripts() {
-    return src(scriptsGlob)
+    return src(paths.srcGlobOf('scripts'))
         .pipe(sourcemaps.init())
         .pipe(babel({ presets: ['@babel/env'] }))
         .pipe(concat('main.js'))
         .pipe(terser())
         .pipe(sourcemaps.write())
-        .pipe(dest(buildDir));
+        .pipe(dest(paths.bldDir));
 }
 
 function styles() {
-    return src(stylesGlob)
+    return src(paths.srcGlobOf('styles'))
         .pipe(sourcemaps.init())
         .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
         .pipe(concat('main.css'))
@@ -105,46 +165,42 @@ function styles() {
         //.pipe(autoprefixer()) // currently broken with gulp-sourcemaps
         .pipe(postcss([autoprefixer()])) // replaces gulp-autoprefixer
         .pipe(sourcemaps.write())
-        .pipe(dest(buildDir));
+        .pipe(dest(paths.bldDir));
 }
 
-function markups() {
-    return src(markupsGlob)
-        .pipe(dest(buildDirOf('markups')));
-}
-
-// ToDo: check if needs to specify sourceBase and targetPath in upload
 function upload(type) {
-    // if valid type argument is provided upload only files of that type
-    if (Object.values(subDirs).includes(type)) {
-        return theme.upload({'glob': '**', 'sourcePath': buildDirOf(type)});
+    // if type argument is provided upload only files of that type, type validation happens in paths.bldGlobOf()
+    if (typeof type == 'string') {
+        console.log("paths.bldGlobOf(type):::", paths.bldGlobOf(type)); // paths.bldGlobOf(type)
+        return theme.upload({ 'glob': paths.bldGlobOf(type), 'sourcePath': paths.bldDir, 'targetPath': '' });
     } // if not upload whole buildDir
     else {
-        return theme.upload({'glob': '**', 'sourcePath': buildDir});
+        return theme.upload({ 'glob': paths.bldGlob, 'sourcePath': paths.bldDir, 'targetPath': '' });
     }
 }
 
-// ToDo: fix
-function syncBrowser() {
-    if (themeData.confluenceBaseUrl) {
-        browserSync.init({
-            proxy: themeData.confluenceBaseUrl
-        });
-    } else {
-        // ToDo: Error handling
-    }
+function initialiseBrowser(done) {
+    browserSync.init({
+        // manual concat since can't use path.join() on Windows for URLs!
+        // values were validated in ViewportTheme class to not contain leading / trailing slashes
+        proxy: theme.confluenceBaseUrl + "/" + theme.scope
+    });
+    done();
+}
 
+function reloadBrowser(done) {
     browserSync.reload();
+    done();
 }
 
 function startWatch(done) {
 
-    // use anonymous functions since upload(type) gives a value and series() expects a function
-    watch(fontsGlob, series(fonts, () => upload('fonts'), browserSync));
-    watch(imagesGlob, series(images, () => upload('images'), browserSync));
-    watch(scriptsGlob, series(scripts, () => upload('scripts'), browserSync));
-    watch(stylesGlob, series(styles, () => upload('styles'), browserSync));
-    watch(markupsGlob, series(markups, () => upload('markups'), browserSync));
+    // use anonymous function to wrap value of upload(type) otherwise it would be replaced by its return value
+    watch(paths.srcGlobOf('fonts'), series(fonts, () => upload('fonts'), reloadBrowser));
+    watch(paths.srcGlobOf('images'), series(images, () => upload('images'), reloadBrowser));
+    watch(paths.srcGlobOf('scripts'), series(scripts, () => upload('scripts'), reloadBrowser));
+    watch(paths.srcGlobOf('styles'), series(styles, () => upload('styles'), reloadBrowser));
+    watch(paths.srcGlobOf('markups'), series(markups, () => upload('markups'), reloadBrowser));
 
     done();
 }

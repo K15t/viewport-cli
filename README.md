@@ -46,7 +46,7 @@ npm install
  ```javascript
  npx gulp build
  ```
-- Continuously builds and uploads the theme to Scroll Viewport as soon as you make changes. If `viewport-tools` was properly configured, it opens the browser and automatically refreshes the site. Stop it using <kbd>CTRL</kbd> + <kbd>C</kbd>.
+- Continuously builds and uploads the theme to Scroll Viewport as soon as you make changes. If `viewport-tools` was properly configured, it opens the browser and automatically refreshes the site, mirrors the site on `http://localhost:3000` and should automatically open. Stop it using <kbd>CTRL</kbd> + <kbd>C</kbd>.
  ```javascript
  npx gulp watch
  ```
@@ -124,11 +124,11 @@ Note 2: Beware of using strict mode in script files. Since they are merged to on
 
 ### Custom theme templates
 
-Theme templates are simply folders within in the `templates` folder in the `viewport-tools` installation directory. You can create your own theme templates just by creating a new folder or modify existing ones. You could place the resources you definitely need for every theme like JavaScript and CSS frameworks to your theme template. Or your could customise the build workflow, like adding a compression pipe to the images pipeline, or adding a linter to the scripts pipeline.
+Theme templates are simply folders within in the `templates` folder in the `viewport-tools` installation directory. You can create your own theme templates just by creating a new folder or modifying an existing one. For example, you could put in the resources you need for every of your themes like logos and icons, or the JavaScript and CSS framework you use.
 
-A theme template must contain a `package.json` and a `gulpfile.js`. These get filled with the information you provide when creating a new theme from that template. The `package.json` is filled with the theme data like name, version and description. The `gulpfile.js` is filled with the name of the selected target environment and the theme name. It's probably best to duplicate the "default" theme template and start to modify that.
+Also you can customise the build workflow by modifying the `gulpfile.js`. For example, you could add a compression pipe to the images pipeline, or a linter to the scripts pipeline. If you want to modify which file types and/or directories are used, edit the globs and directories inside the constructor of the `Paths` class. These values are used to compute the files and directories dynamically in every task. For example, you could restrict image file types to only be of type `.jpg` by modifying the `imagesGlob` to `[**/*.jpg]`. The globs are written relative to their respective directory, but computed relative to the CWD of the script. Be aware: also the glob passed to `upload()` is taken relative to the CDW, i.e. just '**' would upload everything including your `node_modules` folder ⚠️
 
-Note: Make sure to not change the declaration of the `themeData` variable in the `gulpfile.js` because this is where `viewport-tools` fills in the theme name and the selected target environment. ⚠️
+A theme template must contain a `package.json` and a `gulpfile.js`. These get filled with the information you provide when creating a new theme from that template. The `package.json` is filled with the theme data like name, version and description. The `gulpfile.js` is filled with the name of the selected target environment and the theme name. It's probably best to duplicate the "default" theme template and start to modify that. Make sure to _not_ change the declaration of the `themeData` variable in the `gulpfile.js` because this is where `viewport-tools` fills in the theme name and the name of the selected target environment. ⚠️
 
 
 ## Notes

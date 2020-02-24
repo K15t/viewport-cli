@@ -4,14 +4,8 @@
 
 - Make file helpers async, await them in index.js
 - put proper validation from Scroll Viewport in `envTemplate`
-
-## Build process in `gulpfile.js`
-
-- ? include `includePaths` in sass pipe options
-- Integrate TypeScript
-- ? Integrate image compression
-- Add more error handling and console output
-- ? Optimise https://www.browsersync.io/ ?
+- ? sourcemaps attribute in `src` function ?
+- ? URL in browsersync with space key ?
 
 ## Frameworks
 
@@ -20,6 +14,12 @@
 - ? Implement framework chooser in `viewport create` for most popular choices, e.g. jQuery, Foundation, MotionUI
 - ? Make chooser even modular so can add own frameworks
 - ? include Framework handling in gulp only if frameworks where chosen, e.g. Sass handling
+
+## Build process in `gulpfile.js`
+
+- ? include `includePaths` in sass pipe options ?
+- ? Integrate TypeScript ?
+- ? Integrate image compression ?
 
 ## NPM package
 
