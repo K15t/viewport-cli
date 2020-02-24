@@ -116,15 +116,15 @@ const paths = new Paths();
 
 // --------------- Tasks --------------- //
 
-exports.clean = series(create, clean);
-exports.build = series(create, clean, parallel(fonts, images, scripts, styles, markups), upload);
+exports.clean = series(create, reset);
+exports.build = series(create, reset, parallel(fonts, images, scripts, styles, markups), upload);
 exports.watch = series(exports.build, initialiseBrowser, startWatch);
 
 function create() {
     return theme.create(); // existence check is implemented in viewport-sync
 }
 
-function clean() {
+function reset() {
     return (async () => {
         await theme.reset();
         await del(paths.bldDir);
@@ -171,7 +171,6 @@ function styles() {
 function upload(type) {
     // if type argument is provided upload only files of that type, type validation happens in paths.bldGlobOf()
     if (typeof type == 'string') {
-        console.log("paths.bldGlobOf(type):::", paths.bldGlobOf(type)); // paths.bldGlobOf(type)
         return theme.upload({ 'glob': paths.bldGlobOf(type), 'sourcePath': paths.bldDir, 'targetPath': '' });
     } // if not upload whole buildDir
     else {

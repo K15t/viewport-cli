@@ -110,13 +110,13 @@ Private tasks are used internally by the public tasks and can not be run from th
 
 | Task name | Description                                                                           | File types         | Source directory            | Build directory |
 | --------- | ------------------------------------------------------------------------------------- | ------------------ | --------------------------- | --------------- |
-| create    | creates theme in Scroll Viewport (if it doesn't exist yet)                                                                | -                  | -                           | -               |
+| create    | creates theme in Scroll Viewport (if it doesn't exist yet)                            | -                  | -                           | -               |
 | fonts     | -                                                                                     | any                | src/fonts/                  | build/fonts/    |
 | images    | -                                                                                     | any                | src/images/                 | build/images/   |
 | scripts   | creates sourcemap, transpiles and adds backward compatibility (Babel), concats to single `main.js`, minifies | .js                | src/scripts/                | build/          |
 | styles    | creates sourcemap, preprocesses (Sass), concats to single `main.css`, minifies, adds backward compatibility | .css, .sass, .scss | src/styles/                 | build/          |
 | markups   | -                                                                                     | .html, .vm         | src/markups/                | build/markups/  |
-| upload    | uploads file type or entire build dir to Scroll Viewport                                         | any                | build/ or build/[file type] | -               |
+| upload    | uploads file type or entire build dir to Scroll Viewport                              | any                | build/ or build/[file type] | -               |
 
 Note: The `main.css` and `main.js` files must be referenced in the markup file for styles and scripts to get applied to the web page.
 
