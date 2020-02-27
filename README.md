@@ -11,7 +11,7 @@ The `viewport-tools` package is a simple command line tool to set up a local the
 
 ### Installation
 
-1. Install Confluence Server and the Scroll Viewport add-on (see [insert URL](#)).
+1. Install Confluence Server and the Scroll Viewport add-on (see [Help Center](https://help.k15t.com/scroll-viewport)).
 1. Install Node.js, `npm` and `npx`. We recommend using `nvm` to install Node.
 1. Install `viewport-tools` _globally_ to be able to run in from everywhere
 ```bash
@@ -59,7 +59,7 @@ npx gulp clean
 
 ### Target environments
 
-A target environment contains data like the URL of your Confluence Server instance, and the username and password. When creating a new theme, `viewport-tools` asks you to choose one of the available target environments for your theme. In the build workflow, this is then used by `viewport-sync` to communicate with Scroll Viewport to create, upload or clean your theme. You can add or edit target environments using `viewport config`.
+A target environment contains the URL of your Confluence Server instance, the username and password to authenticate with it, as well as the space key of the Viewport. When creating a new theme, `viewport-tools` asks you to choose one of the available target environments for your theme. In the build workflow, this is then used by `viewport-sync` to communicate with Scroll Viewport to create, upload or clean your theme. You can add or edit target environments using `viewport config`.
 
 Target environments are saved as objects in the hidden file `.vpconfig.json` in your home directory. When creating a theme, the name of the selected target environment is filled out in the `gulpfile.js`. Upon running the build workflow, `viewport-sync` is instantiated with the name of the target environment and looks for a target environment with this name in the `.vpconfig.json`. (Read more below how it transfers the name of the target environment into the `gulpfile.js` and what you should bear in mind before modifying it.)
 
@@ -83,7 +83,7 @@ The "default" theme comes with the following folder structure. The `src` folder 
 
 The build workflow then creates a `build` folder with the same subfolders (provided the source folders are non-empty).
 
-A `.gitignore` file is included to ignore any OS files as well as Node related files like the `node_modules` folder, in case you use git to version control your theme (which you should!). This also means if you clone a theme you need to run `npm install` again to install all dependencies.
+A `.gitignore` file is included to ignore the `build` folder, any OS files, as well as Node related files like the `node_modules` folder, in case you use git to version control your theme (which you should!). This also means if you clone a theme you need to run `npm install` again to install all dependencies.
 
 Note: Changing the folder structure means the build workflow in the `gulpfile.js` needs to be adapted as well! ⚠️
 
@@ -116,6 +116,8 @@ Private tasks are used internally by the public tasks and can not be run from th
 | styles    | creates sourcemap, preprocesses (Sass), concats to single `main.css`, minifies, adds backward compatibility | .css, .sass, .scss | src/styles/                 | build/          |
 | markups   | -                                                                                     | .html, .vm         | src/markups/                | build/markups/  |
 | upload    | uploads file type or entire build dir to Scroll Viewport                              | any                | build/ or build/[file type] | -               |
+
+By default, `upload()` takes the files and folders inside the `build` directory and uploads them to the root of the theme in Scroll Viewport, i.e. `<confluenceBaseUrl>/<spaceKey>/<content-of-build-dir-goes-here>`. If you want to add or omit a subdirectory, you can change the `targetPath` and `sourcePath` options as seen in the [viewport-sync](#) documentation.
 
 Note: The `main.css` and `main.js` files must be referenced in the markup file for styles and scripts to get applied to the web page.
 

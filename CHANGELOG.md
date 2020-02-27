@@ -31,7 +31,7 @@ Version 1.0.0 of `viewport-tools` comes with long awaited improvements that make
     - doesn't need to edit by hand since implemented modification interface directly in `viewport-tools`
     - the new `viewport-sync` makes use of it, loading is easier, needs to pass it only `envName` when instantiating, i.e. no hardcoded config, e.g. `confluenceBaseUrl` was left hardcoded in old "Basic" template, needed to be changed in every new theme created from it because it was downloaded from the Github repo each time.
     - on theme creation fills out `gulpfile.js` with selected config automatically, no need to manually edit it anymore
-    - added `scope` property
+    - added `spaceKey` property
     - removed `targetPath` and `sourcePath` in favor of providing them as arguments to `upload()` method of `viewport-sync` directly
 - Nicer visuals
 

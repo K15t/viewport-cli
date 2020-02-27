@@ -182,7 +182,7 @@ function initialiseBrowser(done) {
     browserSync.init({
         // manual concat since can't use path.join() on Windows for URLs!
         // values were validated in ViewportTheme class to not contain leading / trailing slashes
-        proxy: theme.confluenceBaseUrl + "/" + theme.scope
+        proxy: theme.confluenceBaseUrl + "/" + theme.spaceKey
     });
     done();
 }

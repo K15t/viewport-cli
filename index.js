@@ -24,13 +24,13 @@ const vpconfigPath = path.join(os.homedir(), vpconfigName); // absolute path
 
 // ToDo: put in proper restrictions from Scroll Viewport for envName, username, password
 // ToDo: update inquirer help with restrictions as well.
-// Note: If you change something here change it in viewport-sync as well!
+// Note: If you change something in this template object, change it in viewport-sync as well!
 const envTemplate = {
     'envName': /.*/i,
     'confluenceBaseUrl': /^(https?):\/\/[^\s$.?#].[^\s]*[^/]$/i,
     'username': /.*/i,
     'password': /.*/i,
-    'scope': /^[a-z0-9]{0,255}$/i, // https://confluence.atlassian.com/doc/space-keys-829076188.html
+    'spaceKey': /^[a-z0-9]{0,255}$/i, // https://confluence.atlassian.com/doc/space-keys-829076188.html
 };
 
 // ----------------- Commands ----------------- //
@@ -172,7 +172,7 @@ async function createConfig({ existingEnvNames = [], defaultConfig = {}, vpconfi
 
     const config = await askConfig({ existingEnvNames, defaultConfig, 'envTemplate': envTemplate});
 
-    vpconfig[config.envName] = config; // overwrites if envName already exists, but has check implemented in askConfig
+    vpconfig[config.envName] = config; // overwrites if envName already exists, but has check implemented in askConfig() for this
 
     await fs.writeJson(vpconfigPath, vpconfig);
 
