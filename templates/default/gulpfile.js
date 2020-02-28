@@ -153,7 +153,7 @@ function scripts() {
         .pipe(concat('main.js'))
         .pipe(terser())
         .pipe(sourcemaps.write())
-        .pipe(dest(paths.bldDir));
+        .pipe(dest(paths.bldDirOf('scripts')));
 }
 
 function styles() {
@@ -165,7 +165,7 @@ function styles() {
         //.pipe(autoprefixer()) // currently broken with gulp-sourcemaps
         .pipe(postcss([autoprefixer()])) // replaces gulp-autoprefixer
         .pipe(sourcemaps.write())
-        .pipe(dest(paths.bldDir));
+        .pipe(dest(paths.bldDirOf('styles')));
 }
 
 function upload(type) {
