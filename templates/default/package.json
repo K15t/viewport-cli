@@ -14,8 +14,8 @@
     "gulp-terser": "^1.2.0",
     "autoprefixer": "^9.7.4",
     "gulp-clean-css": "^4.2.0",
+    "gulp-dart-sass": "^0.9.1",
     "gulp-postcss": "^8.0.0",
-    "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.5"
   },
   "private": true

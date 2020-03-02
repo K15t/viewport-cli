@@ -4,7 +4,7 @@
 
 ## Introduction
 
-The `viewport-tools` package is a simple command line tool to set up a local theme development environment for Scroll Viewport. Creating themes locally enables you to develop themes for Scroll Viewport in your favorite IDE instead of Scroll Viewport's built-in Theme Editor in the browser. `viewport-tools` comes with customizable theme templates that use the powerful task manager `gulp` to take care of building and uploading your theme to Scroll Viewport. It is intended to get you started quickly.
+The `viewport-tools` package is a command line tool to set up a local theme development environment for Scroll Viewport. Creating custom themes for Scroll Viewport locally enables you to develop in your favorite IDE instead of Scroll Viewport's built-in Theme Editor in the browser. The `viewport-tools` provide customizable theme templates that use the powerful task manager `gulp` to take care of building and uploading your theme to Scroll Viewport. Under the hood, the build workflow is already configured to use `viewport-sync` to communicate with Scroll Viewport, which otherwise you would have needed to set up yourself. The provided build workflow should fit most users needs, while still retaining full customization in case you want to change anything later. For example, we built the theme of [k15t.com](https://www.k15t.com/) from the "default" template of `viewport-tools`.
 
 
 ## Getting started

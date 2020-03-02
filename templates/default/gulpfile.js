@@ -17,7 +17,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
 const terser = require('gulp-terser');
 
-const sass = require('gulp-sass');
+const sass = require('gulp-dart-sass');
 const cleancss = require('gulp-clean-css');
 // const autoprefixer  = require('gulp-autoprefixer'); // currently breaks when using gulp-sourcemaps
 const postcss = require('gulp-postcss'); // replaces gulp-autoprefixer

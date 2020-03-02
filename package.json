@@ -1,13 +1,14 @@
 {
   "name": "viewport-tools",
   "version": "1.0.0",
-  "description": "Create themes locally for Scroll Viewport",
+  "description": "Create custom themes for Scroll Viewport locally",
   "dependencies": {
     "args": "^5.0.1",
     "chalk": "^3.0.0",
     "clear": "^0.1.0",
     "figlet": "^1.2.4",
     "fs-extra": "^8.1.0",
+    "gulp-dart-sass": "^0.9.1",
     "inquirer": "^7.0.4",
     "replace-in-file": "^5.0.2"
   },
@@ -23,8 +24,7 @@
     "viewport",
     "scroll-viewport",
     "k15t",
-    "confluence",
-    "theme"
+    "confluence"
   ],
   "author": "Stefan Kleineikenscheidt <stefan@k15t.com> (http://www.k15t.com/)",
   "license": "MIT",
