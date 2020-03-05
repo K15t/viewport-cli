@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <title>$theme.name</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="${theme.baseUrl}/images/favicon.png">
+    <link rel="stylesheet" href="${theme.baseUrl}/styles/main.css">
+    <script src="${theme.baseUrl}/scripts/main.js"></script>
+</head>
+
+<body>
+
+<header>
+    <h1>Welcome to my $theme.name</h1>
+</header>
+
+<main>
+    <p>This is the default page.vm template that will be loaded on (almost) every page of your Confluence space. It is written in the
+        Velocity Template Language (VLT) you can reference your content from Confluence via placeholder variables. It must be located in the root directory of your theme.</p>
+
+    <p>For more information please visit the <a href="https://help.k15t.com/scroll-viewport/">Scroll Viewport documentation</a>.</p>
+</main>
+
+<footer>
+    <p>Powered by <a href="http://www.k15t.com/software/scroll-viewport">Scroll Viewport for Confluence</a>.</p>
+</footer>
+</body>
+
+</html>

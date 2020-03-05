@@ -52,9 +52,9 @@ class Paths {
         // sub-directories relative to bldDir
         this.bld.fonts = 'fonts/';
         this.bld.images = 'images/';
-        this.bld.markups = 'markups/';
-        this.bld.scripts = ''; // concatenated main.js lies in top-level
-        this.bld.styles = ''; // concatenated main.css lies in top-level
+        this.bld.markups = ''; // markups are in top-level
+        this.bld.scripts = 'scripts/';
+        this.bld.styles = 'styles/';
 
         // source globs relative to corresponding sub-directories
         this.src.fontsGlob = ['**'];
@@ -182,7 +182,8 @@ function initialiseBrowser(done) {
     browserSync.init({
         // manual concat since can't use path.join() on Windows for URLs!
         // values were validated in ViewportTheme class to not contain leading / trailing slashes
-        proxy: theme.confluenceBaseUrl + "/" + theme.spaceKey
+        // Scroll Viewport converts spaceKey in URL to lowercase
+        proxy: theme.confluenceBaseUrl + "/" + theme.spaceKey.toLowerCase()
     });
     done();
 }
