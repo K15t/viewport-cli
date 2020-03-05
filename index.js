@@ -22,8 +22,6 @@ const templateDirPath = path.join(__dirname, templateDirName); // absolute path
 const vpconfigName = ".vpconfig.json";
 const vpconfigPath = path.join(os.homedir(), vpconfigName); // absolute path
 
-// ToDo: put in proper restrictions from Scroll Viewport for envName, username, password
-// ToDo: update inquirer help with restrictions as well.
 // Note: If you change something in this template object, change it in viewport-sync as well!
 const envTemplate = {
     'envName': /.*/i,

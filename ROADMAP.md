@@ -2,23 +2,7 @@
 
 ## Misc
 
-- Make file helpers async, await them in index.js
-- put proper validation from Scroll Viewport in `envTemplate`
-- ? sourcemaps attribute in `src` function ?
-
-## Frameworks
-
-- implement way how frameworks can be included in theme, e.g. src/styles/frameworks and src/scripts/frameworks folders or in entirely seperate folder outside of src
-- exclude frameworks folders from build pipeline, e.g. merging, only in upload pipeline
-- ? Implement framework chooser in `viewport create` for most popular choices, e.g. jQuery, Foundation, MotionUI
-- ? Make chooser even modular so can add own frameworks
-- ? include Framework handling in gulp only if frameworks where chosen, e.g. Sass handling
-
-## Build process in `gulpfile.js`
-
-- ? include `includePaths` in sass pipe options ?
-- ? Integrate TypeScript ?
-- ? Integrate image compression ?
+- Make `directoryList` async, await it in index.js
 
 ## NPM package
 
