@@ -1,4 +1,4 @@
-// Gulp workflow
+// Gulp build process
 
 "use strict";
 
@@ -19,7 +19,7 @@ const terser = require('gulp-terser');
 
 const sass = require('gulp-dart-sass');
 const cleancss = require('gulp-clean-css');
-// const autoprefixer  = require('gulp-autoprefixer'); // currently breaks when using gulp-sourcemaps
+// const autoprefixer = require('gulp-autoprefixer'); // currently breaks when using gulp-sourcemaps
 const postcss = require('gulp-postcss'); // replaces gulp-autoprefixer
 const autoprefixer = require('autoprefixer'); // replaces gulp-autoprefixer
 
