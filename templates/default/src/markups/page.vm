@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="${theme.baseUrl}/images/favicon.png">
     <link rel="stylesheet" href="${theme.baseUrl}/styles/main.css">
-    <script src="${theme.baseUrl}/scripts/main.js"></script>
+    <script src="${theme.baseUrl}/scripts/main.js" defer></script>
 </head>
 
 <body>
