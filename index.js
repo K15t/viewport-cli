@@ -11,8 +11,8 @@ const replace = require('replace-in-file');
 const os = require('os');
 
 const { directoryList } = require('./lib/files.js');
-const { askTheme, askConfig, chooseConfig } = require('./lib/inquirer.js');
-const { showWelcome, showFinishedCreate, showFinishedConfig, showConfigFirst, showError } = require('./lib/console.js');
+const { askTheme, askConfig, chooseConfig, chooseConfigToDelete } = require('./lib/inquirer.js');
+const { showWelcome, showFinishedCreate, showAddedConfig, showEditedConfig, showDeletedConfig, showConfigFirst, showError } = require('./lib/console.js');
 const { regexVal } = require('./lib/validate.js');
 
 // ----------------- Configuration ----------------- //
@@ -59,15 +59,13 @@ function config() {
 
     if (fs.existsSync(vpconfigPath)) {
         selectConfig()
-            .then(createConfig)
-            .then(showFinishedConfig)
+            .then(handleSelection)
             .catch(showError);
     } else {
         createConfig({})
-            .then(showFinishedConfig)
+            .then(showAddedConfig)
             .catch(showError);
     }
-
 }
 
 // ----------------- Create ----------------- //
@@ -147,32 +145,95 @@ async function createTheme() {
     return theme; // for promise chain to continue
 }
 
-// ----------------- Initialize ----------------- //
+// ----------------- Configure ----------------- //
 
 async function selectConfig() {
 
     // get list of available target environments
     const vpconfig = await fs.readJson(vpconfigPath); // exists since checked in config()
-    const envNameList = Object.keys(vpconfig); // could be empty array
+    const existingEnvNames = Object.keys(vpconfig); // could be empty array
 
-    // list configs to choose from, either edit or add new one
-    const { envToEdit } = await chooseConfig({ 'choices': ['add...', ...envNameList] });
+    // list target environments to choose from, including 'add..'. and 'delete...'
+    const { envNameOrAddOrDelete } = await chooseConfig({ 'choices': ['add...', 'delete...', ...existingEnvNames] });
 
-    // return arguments for createConfig() in promise chain
-    if (envToEdit == "add...") {
-        return { 'existingEnvNames': envNameList, 'vpconfig': vpconfig };
+    return {vpconfig, existingEnvNames, envNameOrAddOrDelete};
+}
+
+async function handleSelection({vpconfig, existingEnvNames, envNameOrAddOrDelete}) {
+
+    // create promise chain based on condition
+    if (envNameOrAddOrDelete == "add...") {
+        return Promise.resolve({ vpconfig, existingEnvNames })
+            .then(createConfig)
+            .then(showAddedConfig);
+    } else if (envNameOrAddOrDelete == "delete...") {
+        return Promise.resolve({vpconfig, existingEnvNames})
+            .then(selectConfigToDelete)
+            .then(deleteConfig)
+            .then(showDeletedConfig)
     } else {
-        return { 'existingEnvNames': envNameList, 'defaultConfig': vpconfig[envToEdit], 'vpconfig': vpconfig };
+        return Promise.resolve({ vpconfig, existingEnvNames, envNameToEdit: envNameOrAddOrDelete })
+            .then(editConfig)
+            .then(showEditedConfig);
     }
 }
 
-async function createConfig({ existingEnvNames = [], defaultConfig = {}, vpconfig = {} }) {
+async function createConfig({ vpconfig = {}, existingEnvNames = []}) {
 
-    const config = await askConfig({ existingEnvNames, defaultConfig, 'envTemplate': envTemplate});
+    const config = await askConfig({ existingEnvNames, envTemplate});
 
     vpconfig[config.envName] = config; // overwrites if envName already exists, but has check implemented in askConfig() for this
 
     await fs.writeJson(vpconfigPath, vpconfig);
 
-    return config; // for promise chain to continue
+    return config.envName; // for promise chain to continue
+}
+
+async function editConfig({ vpconfig, existingEnvNames, envNameToEdit }) {
+
+    // filter out the selected envName from existingEnvNames so won't register as duplicate
+    const config = await askConfig({ 'existingEnvNames': existingEnvNames.filter(item => item !== envNameToEdit), envTemplate, 'defaultConfig': vpconfig[envNameToEdit]});
+
+    const envNameNew = config.envName;
+
+    // delete old if new one has a different name
+    if (envNameNew != envNameToEdit) {
+        const deleted = delete vpconfig[envNameToEdit];
+
+        if (!deleted) {
+            throw new Error(`The target environment with name ${envNameToEdit} can not be deleted since it doesn't exist.`)
+        }
+    }
+
+    vpconfig[envNameNew] = config; // knowingly overwrites existing if name didn't change
+
+    await fs.writeJson(vpconfigPath, vpconfig);
+
+    return envNameNew; // for promise chain to continue
+}
+
+async function selectConfigToDelete({vpconfig, existingEnvNames}) {
+
+    // list target environments to choose from
+    const { envNameToDelete } = await chooseConfigToDelete({ 'choices': existingEnvNames });
+
+    return {vpconfig, envNameToDelete};
+}
+
+async function deleteConfig({vpconfig, envNameToDelete}) {
+
+    const deleted = delete vpconfig[envNameToDelete];
+
+    if (!deleted) {
+        throw new Error(`The target environment with name ${envNameToDelete} can not be deleted since it doesn't exist.`)
+    }
+
+    // delete entire file if deleted entry was the last entry
+    if (Object.keys(vpconfig).length) {
+        await fs.writeJson(vpconfigPath, vpconfig);
+    } else {
+        await fs.remove(vpconfigPath);
+    }
+
+    return envNameToDelete; // for promise chain to continue
 }
