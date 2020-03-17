@@ -1,5 +1,5 @@
 {
-  "name": "viewport-tools",
+  "name": "viewport-cli",
   "version": "1.0.0",
   "description": "Create custom themes for Scroll Viewport locally",
   "dependencies": {
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/K15t/viewport-tools.git"
+    "url": "git+https://github.com/K15t/viewport-cli.git"
   },
   "keywords": [
     "scroll",
@@ -29,7 +29,7 @@
   "author": "Stefan Kleineikenscheidt <stefan@k15t.com> (http://www.k15t.com/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/K15t/viewport-tools/issues"
+    "url": "https://github.com/K15t/viewport-cli/issues"
   },
-  "homepage": "https://github.com/K15t/viewport-tools#readme"
+  "homepage": "https://github.com/K15t/viewport-cli#readme"
 }

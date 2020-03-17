@@ -8,7 +8,7 @@ const { src, dest, series, parallel, watch } = require('gulp');
 const del = require('del');
 const path = require('path');
 
-const ViewportTheme = require('viewport-sync');
+const ViewportTheme = require('viewport-uploader');
 const browserSync = require('browser-sync').create();
 
 const concat = require('gulp-concat');
@@ -121,7 +121,7 @@ exports.build = series(create, reset, parallel(fonts, images, scripts, styles, m
 exports.watch = series(exports.build, initialiseBrowser, startWatch);
 
 function create() {
-    return theme.create(); // existence check is implemented in viewport-sync
+    return theme.create(); // existence check is implemented in viewport-uploader
 }
 
 function reset() {

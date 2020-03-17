@@ -2,23 +2,25 @@
 
 ## 1.0.0
 
-Version 1.0.0 of `viewport-tools` comes with long awaited improvements that make local theme development for Scroll Viewport again possible with the newest versions of Node. It relies on the new `viewport-sync` tools which replace `gulp-viewport`.
+> `viewport-cli` is the new `viewport-tools`.
+
+Version 1.0.0 of `viewport-cli` comes with long awaited improvements that make local theme development for Scroll Viewport again possible with the newest versions of Node. It relies on the new `viewport-uploader` tools which replace `gulp-viewport`.
 
 ### Summary
 
-- `viewport-tools` was rewritten from scratch to be much more stable, reliable and modular.
+- `viewport-cli` was rewritten from scratch to be much more stable, reliable and modular.
 
 - Theme templates aren't hardcoded anymore and then sourced from the internet on theme creation. Instead they are sourced dynamically from `themes` folder. User can add own theme templates or customize existing ones.
 
 - The build workflow was rewritten from scratch to be much more robust and independent of any frameworks. It uses contemporary dependencies, notably gulp 4 which means it works again with all recent Node version until v13 at the time of writing. The available tasks were simplified and the whole workflow was optimised to be faster.
 
-### `viewport-tools`
+### `viewport-cli`
 
 - Rewritten from scratch
     - with ES6 syntax, strict mode, `const` variables
     - much cleaner code, split into modules 
 - All functions are async and use promises
-- Templates are not hardcoded into `viewport-tools` anymore and downloaded on every theme creation, but instead taken from local `themes` folder
+- Templates are not hardcoded into `viewport-cli` anymore and downloaded on every theme creation, but instead taken from local `themes` folder
     - much faster, no internet connection needed on every theme creation
     - user isn't forced to make binary choice, instead free to use what he wants
     - blank default template
@@ -28,11 +30,11 @@ Version 1.0.0 of `viewport-tools` comes with long awaited improvements that make
 - human-readable `.viewportrc` in home directory was replaced by machine-readable `vpconfig.json`
     - difficult to parse and modify human-readable file, JSON is much easier
     - much less error prone to edit a JSON instead of a file that could look arbitrarily
-    - doesn't need to edit by hand since implemented modification interface directly in `viewport-tools`
-    - the new `viewport-sync` makes use of it, loading is easier, needs to pass it only `envName` when instantiating, i.e. no hardcoded config, e.g. `confluenceBaseUrl` was left hardcoded in old "Basic" template, needed to be changed in every new theme created from it because it was downloaded from the Github repo each time.
+    - doesn't need to edit by hand since implemented modification interface directly in `viewport-cli`
+    - the new `viewport-uploader` makes use of it, loading is easier, needs to pass it only `envName` when instantiating, i.e. no hardcoded config, e.g. `confluenceBaseUrl` was left hardcoded in old "Basic" template, needed to be changed in every new theme created from it because it was downloaded from the Github repo each time.
     - on theme creation fills out `gulpfile.js` with selected config automatically, no need to manually edit it anymore
     - added `spaceKey` property
-    - removed `targetPath` and `sourcePath` in favor of providing them as arguments to `upload()` method of `viewport-sync` directly
+    - removed `targetPath` and `sourcePath` in favor of providing them as arguments to `upload()` method of `viewport-uploader` directly
 - Nicer visuals
 
 ### "default" theme template

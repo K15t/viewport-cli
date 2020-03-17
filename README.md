@@ -4,7 +4,7 @@
 
 ## Introduction
 
-The *viewport-tools* package is a command line tool to set up a local theme development environment for Scroll Viewport. Creating custom themes for Scroll Viewport locally enables you to develop in your favorite IDE instead of Scroll Viewport's built-in Theme Editor in the browser. The *viewport-tools* provide customizable theme templates that use the powerful task manager *gulp* to take care of building and uploading your theme to Scroll Viewport. Under the hood, the build process is already configured to use *viewport-sync* to communicate with Scroll Viewport, which otherwise you would have needed to set up yourself. The provided build process should fit most users needs, while still retaining full customization in case you want to change anything later. For example, we built the theme of [k15t.com](https://www.k15t.com/) from the "default" template of *viewport-tools*.
+The *viewport-cli* package is a command line tool to set up a local theme development environment for Scroll Viewport. Creating custom themes for Scroll Viewport locally enables you to develop in your favorite IDE instead of Scroll Viewport's built-in Theme Editor in the browser. The *viewport-cli* provide customizable theme templates that use the powerful task manager *gulp* to take care of building and uploading your theme to Scroll Viewport. Under the hood, the build process is already configured to use *viewport-uploader* to communicate with Scroll Viewport, which otherwise you would have needed to set up yourself. The provided build process should fit most users needs, while still retaining full customization in case you want to change anything later. For example, we built the theme of [k15t.com](https://www.k15t.com/) from the "default" template of *viewport-cli*.
 
 
 ## Getting started
@@ -13,9 +13,9 @@ The *viewport-tools* package is a command line tool to set up a local theme deve
 
 1. Install Confluence Server and the Scroll Viewport add-on (see [Help Center - Scroll Viewport](https://help.k15t.com/scroll-viewport)).
 1. Install Node.js, `npm` and `npx`. We recommend using `nvm` to install Node.
-1. Install *viewport-tools* _globally_ to be able to run in from everywhere
+1. Install *viewport-cli* _globally_ to be able to run in from everywhere
 ```bash
-npm install -g viewport-tools
+npm install -g viewport-cli
 ```
 
 ### Usage
@@ -26,7 +26,7 @@ The tool will guide you through all the steps. See the documentation below for m
 ```javascript
 viewport config
 ```
-2\. Create a new theme in your desired working directory. You need to provide basic information like name, version, description and choose a target environment. You can select between the installed theme templates. By default *viewport-tools* contains only the "default" theme template.
+2\. Create a new theme in your desired working directory. You need to provide basic information like name, version, description and choose a target environment. You can select between the installed theme templates. By default *viewport-cli* contains only the "default" theme template.
 ```javascript
 cd <your-working-directory>
 viewport create
@@ -63,9 +63,9 @@ npx gulp clean
 
 ### Target environments
 
-A target environment contains the URL of your Confluence Server instance, the username and password to authenticate with it, as well as the space key [^1] of the Viewport. Target environments are saved as objects in the hidden file `.vpconfig.json` in your home directory. You can add or edit target environments using `viewport config`, so you don't need to edit the `.vpconfig.json` manually. For more information on the `.vpconfig.json`, see the documentation of [viewport-sync](#).
+A target environment contains the URL of your Confluence Server instance, the username and password to authenticate with it, as well as the space key [^1] of the Viewport. Target environments are saved as objects in the hidden file `.vpconfig.json` in your home directory. You can add or edit target environments using `viewport config`, so you don't need to edit the `.vpconfig.json` manually. For more information on the `.vpconfig.json`, see the documentation of [viewport-uploader](#).
 
-When creating a new theme, *viewport-tools* asks you to choose one of the available target environments in the `.vpconfig.json` for your theme. The name of the selected target environment is then filled out in the `gulpfile.js` of your new theme. When running the build process, *viewport-sync* will then look in the `.vpconfig.json` for a target environment with that name and use the data to communicate with Scroll Viewport to create, upload or clean your theme. Read more below what you should keep in mind before modifying the `gulpfile.js` of your theme. 
+When creating a new theme, *viewport-cli* asks you to choose one of the available target environments in the `.vpconfig.json` for your theme. The name of the selected target environment is then filled out in the `gulpfile.js` of your new theme. When running the build process, *viewport-uploader* will then look in the `.vpconfig.json` for a target environment with that name and use the data to communicate with Scroll Viewport to create, upload or clean your theme. Read more below what you should keep in mind before modifying the `gulpfile.js` of your theme. 
 
 **Beware:** The `vpconfig.json` is saved unencrypted and includes the username and password of your Confluence Server instance. Therefore you should use these tools only for development.
 
@@ -73,7 +73,7 @@ When creating a new theme, *viewport-tools* asks you to choose one of the availa
 
 ### Theme templates
 
-When creating a new theme, *viewport-tools* offers to select from the available theme templates. By default, the "default" theme template is selected which comes with an average folder structure and build process. It is intended to get you started quickly and can always be customized later.
+When creating a new theme, *viewport-cli* offers to select from the available theme templates. By default, the "default" theme template is selected which comes with an average folder structure and build process. It is intended to get you started quickly and can always be customized later.
 
 ### "Default" theme template
 
@@ -125,7 +125,7 @@ Private tasks are used internally by the public tasks and can not be run from th
 | markups   | -                                                                                     | .html, .vm         | src/markups/                | build/markups/  |
 | upload    | uploads file type or entire build dir to Scroll Viewport                              | any                | build/ or build/[file type] | -               |
 
-By default, `upload()` takes the files and folders inside the `build` directory and uploads them to the root of the theme in Scroll Viewport, i.e. `<confluenceBaseUrl>/<spaceKey>/<content-of-build-dir-goes-here>`. If you want to add or omit a subdirectory, you can change the `targetPath` and `sourcePath` options as seen in the [viewport-sync](#) documentation.
+By default, `upload()` takes the files and folders inside the `build` directory and uploads them to the root of the theme in Scroll Viewport, i.e. `<confluenceBaseUrl>/<spaceKey>/<content-of-build-dir-goes-here>`. If you want to add or omit a subdirectory, you can change the `targetPath` and `sourcePath` options as seen in the [viewport-uploader](#) documentation.
 
 Note: The `main.css` and `main.js` files must be referenced in the markup file for styles and scripts to get applied to the web page.
 
@@ -133,11 +133,11 @@ Note 2: Babel automatically enables strict mode in the `main.js` so you don't ne
 
 ### Custom theme templates
 
-Theme templates are simply folders within in the `templates` folder in the *viewport-tools* installation directory. You can create your own theme templates just by creating a new folder or modifying an existing one. For example, you could put in the resources you need for every of your themes like logos and icons.
+Theme templates are simply folders within in the `templates` folder in the *viewport-cli* installation directory. You can create your own theme templates just by creating a new folder or modifying an existing one. For example, you could put in the resources you need for every of your themes like logos and icons.
 
 Also you can customise the build process by modifying the `gulpfile.js`. For example, you could add a compression pipe to the images pipeline, or a linter to the scripts pipeline. Or you might include the JavaScript and CSS framework you use for every of your themes. You can even conditionally execute certain pipes using packages like `gulp-if`, for example based on if the `NOVE_ENV` environment variable is set to `production` like it might be in your CD/CI pipeline. If you want to modify which file types and/or directories are used, edit the globs and directories inside the constructor of the `Paths` class. These values are used to compute the files and directories dynamically in every task. For example, you could restrict image file types to only be of type `.jpg` by modifying the `imagesGlob` to `[**/*.jpg]`. The globs are written relative to their respective directory defined in the [Folder structure](#), but computed relative to the CWD of the script. Be aware: The glob passed to `upload()` must be written relative to the CWD, i.e. just '**' would upload everything in your theme folder including the whole `node_modules` folder ⚠️
 
-A theme template _must_ contain a `package.json` and a `gulpfile.js`. These get filled with the information you provide when creating a new theme from that template. The `package.json` is filled with the theme data like name, version and description. The `gulpfile.js` is filled with the name of the selected target environment and the theme name. Make sure to _not_ change the declaration of the `themeData` variable in the `gulpfile.js` because this is where *viewport-tools* fills in the theme name and the name of the selected target environment. ⚠️
+A theme template _must_ contain a `package.json` and a `gulpfile.js`. These get filled with the information you provide when creating a new theme from that template. The `package.json` is filled with the theme data like name, version and description. The `gulpfile.js` is filled with the name of the selected target environment and the theme name. Make sure to _not_ change the declaration of the `themeData` variable in the `gulpfile.js` because this is where *viewport-cli* fills in the theme name and the name of the selected target environment. ⚠️
 
 It's probably best to start off with duplicating the "default" theme template and to modify that.
 
@@ -167,7 +167,7 @@ Beware: In the resources themselves, like styles and scripts, paths are taken re
 
 - A theme is actually a NPM package since it contains a `package.json`. Though it is not designed to be published. NPM is only used to load the dependencies for *gulp*. Having a separate `node_modules` subdirectory with the same dependencies for every theme created is certainly not the most space efficient way, but *gulp* is not designed to work globally and will only work if contained in the theme directory. If you want to exchange themes between different machines, it might even benefit you that each theme contains all of its dependencies and can run on the other machine without needing to set up anything, except having Node.js and npm installed. Also the `.gitignore` file already takes care of not backing up the dependencies to your Git repository.
 
-- The dependencies like *gulp*, *viewport-sync*, etc. of the theme package are installed as `devDependencies` which means they won't be installed if the Node environment is set to `production`. (Also they wouldn't be included if the theme package were to be published, which it isn't intended to anyways.). For most people this shouldn't be a problem since Node is by default in `development` mode.
+- The dependencies like *gulp*, *viewport-uploader*, etc. of the theme package are installed as `devDependencies` which means they won't be installed if the Node environment is set to `production`. (Also they wouldn't be included if the theme package were to be published, which it isn't intended to anyways.). For most people this shouldn't be a problem since Node is by default in `development` mode.
 
 
 ## Roadmap

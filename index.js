@@ -22,7 +22,7 @@ const templateDirPath = path.join(__dirname, templateDirName); // absolute path
 const vpconfigName = ".vpconfig.json";
 const vpconfigPath = path.join(os.homedir(), vpconfigName); // absolute path
 
-// Note: If you change something in this template object, change it in viewport-sync as well!
+// Note: If you change something in this template object, change it in viewport-uploader as well!
 const envTemplate = {
     'envName': /.*/i,
     'confluenceBaseUrl': /^(https?):\/\/[^\s$.?#].[^\s]*[^/]$/i,
