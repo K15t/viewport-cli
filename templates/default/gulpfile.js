@@ -59,14 +59,14 @@ class Paths {
         // source globs relative to corresponding sub-directories
         this.src.fontsGlob = ['**'];
         this.src.imagesGlob = ['**'];
-        this.src.markupsGlob = ['**/*.html', '**/*.vm'];
+        this.src.markupsGlob = ['**/*.vm'];
         this.src.scriptsGlob = ['**/*.js'];
         this.src.stylesGlob = ['**/*.scss', '**/*.sass', '**/*.css'];
 
         // build globs relative to corresponding sub-directories
         this.bld.fontsGlob = ['**'];
         this.bld.imagesGlob = ['**'];
-        this.bld.markupsGlob = ['**/*.html', '**/*.vm'];
+        this.bld.markupsGlob = ['**/*.vm'];
         this.bld.scriptsGlob = ['main.js']; // concatenated to single main.js
         this.bld.stylesGlob = ['main.css']; // concatenated to single main.css
 
@@ -93,7 +93,7 @@ class Paths {
         }
     }
 
-    // computes glob for source files of a type, e.g. '['src/markups/**/*.html', 'src/markups/**/*.vm']'
+    // computes glob for source files of a type, e.g. '['src/markups/**/*.vm']'
     srcGlobOf(type) {
         if (this.src.hasOwnProperty(type + 'Glob') && this.src.hasOwnProperty(type)) {
             return this.src[type + 'Glob'].map(item => path.join(this.srcDirOf(type), item));
@@ -102,7 +102,7 @@ class Paths {
         }
     }
 
-    // computes glob for build files of a type, e.g. '['build/markups/**/*.html', 'build/markups/**/*.vm']'
+    // computes glob for build files of a type, e.g. '['build/markups/**/*.vm']'
     bldGlobOf(type) {
         if (this.bld.hasOwnProperty(type + 'Glob') && this.bld.hasOwnProperty(type)) {
             return this.bld[type + 'Glob'].map(item => path.join(this.bldDirOf(type), item));

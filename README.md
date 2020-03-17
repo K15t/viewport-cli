@@ -12,7 +12,7 @@ Note: *viewport-cli* was formerly known as *viewport-tools*. Read more about the
 
 1. Install Confluence Server and the Scroll Viewport add-on (see [Help Center - Scroll Viewport](https://help.k15t.com/scroll-viewport)).
 1. Install Node.js, `npm` and `npx`. We recommend using `nvm` to install Node.
-1. Install *viewport-cli* _globally_ to be able to run in from everywhere
+1. Install viewport-cli _globally_ to be able to run in from everywhere.
 ```bash
 npm install -g viewport-cli
 ```
@@ -70,7 +70,7 @@ When creating a new theme, *viewport-cli* asks you to choose one of the availabl
 
 **Beware:** The `vpconfig.json` is saved unencrypted and includes the username and password of your Confluence Server instance. Therefore you should use these tools only for development.
 
-[^1]: **Beware**: Scroll Viewport treats space keys case-sensitive even though for Confluence they are case-insensitive. If you provide the wrong case, the upload will fail. ⚠️
+[^1]: **Beware**: Scroll Viewport treats space keys case-sensitive even though for Confluence they are case-insensitive. If you provide the wrong case, the upload will fail without a helpful error message. ⚠️
 
 ### Theme templates
 
@@ -84,7 +84,7 @@ The "default" theme comes with the following folder structure. The `src` folder 
 
 - `fonts` for font files
 - `images` for image files
-- `markups` for markup files, e.g. `.html`, `.vm`
+- `markups` for markup files, e.g. `.vm`
 - `scripts` for script files, e.g. `.js`, `.ts`
 - `styles` for style files, e.g. `.css`, `.sass`, `.scss`
 
@@ -123,7 +123,7 @@ Private tasks are used internally by the public tasks and can not be run from th
 | images    | -                                                                                     | any                | src/images/                 | build/images/   |
 | scripts   | creates sourcemap, transpiles and adds backward compatibility (Babel), concats to single `main.js`, minifies | .js                | src/scripts/                | build/          |
 | styles    | creates sourcemap, preprocesses (Sass), concats to single `main.css`, minifies, adds backward compatibility | .css, .sass, .scss | src/styles/                 | build/          |
-| markups   | -                                                                                     | .html, .vm         | src/markups/                | build/markups/  |
+| markups   | -                                                                                     | .vm         | src/markups/                | build/markups/  |
 | upload    | uploads file type or entire build dir to Scroll Viewport                              | any                | build/ or build/[file type] | -               |
 
 By default, `upload()` takes the files and folders inside the `build` directory and uploads them to the root of the theme in Scroll Viewport, i.e. `<confluenceBaseUrl>/<spaceKey>/<content-of-build-dir-goes-here>`. If you want to add or omit a subdirectory, you can change the `targetPath` and `sourcePath` options as seen in the [viewport-uploader][1] documentation.
