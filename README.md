@@ -1,11 +1,10 @@
 # Readme
 
-(Note: The commands and file paths below are written for UNIX but the packages themselves should run on Windows as well.)
-
 ## Introduction
 
 The *viewport-cli* package is a command line tool to set up a local theme development environment for Scroll Viewport. Creating custom themes for Scroll Viewport locally enables you to develop in your favorite IDE instead of Scroll Viewport's built-in Theme Editor in the browser. The *viewport-cli* provide customizable theme templates that use the powerful task manager *gulp* to take care of building and uploading your theme to Scroll Viewport. Under the hood, the build process is already configured to use *viewport-uploader* to communicate with Scroll Viewport, which otherwise you would have needed to set up yourself. The provided build process should fit most users needs, while still retaining full customization in case you want to change anything later. For example, we built the theme of [k15t.com](https://www.k15t.com/) from the "default" template of *viewport-cli*.
 
+Note: *viewport-cli* was formerly known as *viewport-tools*. Read more about the name change in the [CHANGELOG](CHANGELOG.md).
 
 ## Getting started
 
@@ -21,6 +20,8 @@ npm install -g viewport-cli
 ### Usage
 
 The tool will guide you through all the steps. See the documentation below for more details what happens in each step.
+
+Note: The commands and file paths below are written for UNIX but the packages should run on Windows as well.
 
 1\. Add a target environment that matches your configuration of Scroll Viewport. You need to provide information like URL of your Confluence Server instance, username and password.
 ```javascript
@@ -63,7 +64,7 @@ npx gulp clean
 
 ### Target environments
 
-A target environment contains the URL of your Confluence Server instance, the username and password to authenticate with it, as well as the space key [^1] of the Viewport. Target environments are saved as objects in the hidden file `.vpconfig.json` in your home directory. You can add or edit target environments using `viewport config`, so you don't need to edit the `.vpconfig.json` manually. For more information on the `.vpconfig.json`, see the documentation of [viewport-uploader](#).
+A target environment contains the URL of your Confluence Server instance, the username and password to authenticate with it, as well as the space key [^1] of the Viewport. Target environments are saved as objects in the hidden file `.vpconfig.json` in your home directory. You can add or edit target environments using `viewport config`, so you don't need to edit the `.vpconfig.json` manually. For more information on the `.vpconfig.json`, see the documentation of [viewport-uploader][1].
 
 When creating a new theme, *viewport-cli* asks you to choose one of the available target environments in the `.vpconfig.json` for your theme. The name of the selected target environment is then filled out in the `gulpfile.js` of your new theme. When running the build process, *viewport-uploader* will then look in the `.vpconfig.json` for a target environment with that name and use the data to communicate with Scroll Viewport to create, upload or clean your theme. Read more below what you should keep in mind before modifying the `gulpfile.js` of your theme. 
 
@@ -125,7 +126,7 @@ Private tasks are used internally by the public tasks and can not be run from th
 | markups   | -                                                                                     | .html, .vm         | src/markups/                | build/markups/  |
 | upload    | uploads file type or entire build dir to Scroll Viewport                              | any                | build/ or build/[file type] | -               |
 
-By default, `upload()` takes the files and folders inside the `build` directory and uploads them to the root of the theme in Scroll Viewport, i.e. `<confluenceBaseUrl>/<spaceKey>/<content-of-build-dir-goes-here>`. If you want to add or omit a subdirectory, you can change the `targetPath` and `sourcePath` options as seen in the [viewport-uploader](#) documentation.
+By default, `upload()` takes the files and folders inside the `build` directory and uploads them to the root of the theme in Scroll Viewport, i.e. `<confluenceBaseUrl>/<spaceKey>/<content-of-build-dir-goes-here>`. If you want to add or omit a subdirectory, you can change the `targetPath` and `sourcePath` options as seen in the [viewport-uploader][1] documentation.
 
 Note: The `main.css` and `main.js` files must be referenced in the markup file for styles and scripts to get applied to the web page.
 
@@ -173,3 +174,5 @@ Beware: In the resources themselves, like styles and scripts, paths are taken re
 ## Roadmap
 
 - see [Roadmap](Roadmap.md)
+
+[1]: https://github.com/K15t/viewport-uploader/

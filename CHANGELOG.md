@@ -4,14 +4,12 @@
 
 > `viewport-cli` is the new `viewport-tools`.
 
-Version 1.0.0 of `viewport-cli` comes with long awaited improvements that make local theme development for Scroll Viewport again possible with the newest versions of Node. It relies on the new `viewport-uploader` tools which replace `gulp-viewport`.
+Version 1.0.0 of `viewport-cli` comes with long awaited improvements that make local theme development for Scroll Viewport again possible with the newest versions of Node. It relies on the new `viewport-uploader` tools which replace `gulp-viewport`. It also changed its name to better reflect its purpose.
 
 ### Summary
 
 - `viewport-cli` was rewritten from scratch to be much more stable, reliable and modular.
-
 - Theme templates aren't hardcoded anymore and then sourced from the internet on theme creation. Instead they are sourced dynamically from `themes` folder. User can add own theme templates or customize existing ones.
-
 - The build workflow was rewritten from scratch to be much more robust and independent of any frameworks. It uses contemporary dependencies, notably gulp 4 which means it works again with all recent Node version until v13 at the time of writing. The available tasks were simplified and the whole workflow was optimised to be faster.
 
 ### `viewport-cli`
