@@ -4,7 +4,7 @@
   "description": "",
   "devDependencies": {
     "gulp": "^4.0.2",
-    "viewport-uploader": "^3.0.0",
+    "@k15t/viewport-uploader": "^3.0.0",
     "del": "^5.1.0",
     "gulp-concat": "^2.6.1",
     "browser-sync": "^2.26.7",

@@ -14,7 +14,7 @@ Note: *viewport-cli* was formerly known as *viewport-tools*. Read more about the
 1. Install Node.js, `npm` and `npx`. We recommend using `nvm` to install Node.
 1. Install viewport-cli _globally_ to be able to run in from everywhere.
 ```bash
-npm install -g viewport-cli
+npm install -g @k15t/viewport-cli
 ```
 
 ### Usage

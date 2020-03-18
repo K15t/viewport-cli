@@ -8,7 +8,7 @@ const { src, dest, series, parallel, watch } = require('gulp');
 const del = require('del');
 const path = require('path');
 
-const ViewportTheme = require('viewport-uploader');
+const ViewportTheme = require('@k15t/viewport-uploader');
 const browserSync = require('browser-sync').create();
 
 const concat = require('gulp-concat');
